@@ -1,6 +1,6 @@
 ---
 layout: page
-permalink: /preview
+permalink: /preview.html
 permalink_name: /preview
 title: Preview
 ---

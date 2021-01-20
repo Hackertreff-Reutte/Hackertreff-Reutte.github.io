@@ -1,6 +1,6 @@
 ---
 layout: page
-permalink: /faq
+permalink: /faq.html
 permalink_name: FAQ
 title: FAQ
 ---

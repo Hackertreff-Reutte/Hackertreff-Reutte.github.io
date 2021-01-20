@@ -1,6 +1,6 @@
 ---
 layout: page
-permalink: /telegram
+permalink: /telegram.html
 permalink_name: telegram
 title: telegram
 ---
