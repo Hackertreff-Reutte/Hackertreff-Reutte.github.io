@@ -1,0 +1,12 @@
+---
+layout: default
+title:  "POSTS"
+post_assets: "/assets/{{ page.path | replace: '.md','' | replace: '_posts','posts' }}"
+---
+
+{%- if page.detail_image -%}<img class="detail_header" src="{{ page.detail_image }}">{%- endif -%}
+
+<h1 style="color: var(--alt-color)">{{ page.post-title }}</h1>
+
+{{ content }}
+

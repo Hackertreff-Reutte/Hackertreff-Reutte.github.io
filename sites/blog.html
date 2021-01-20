@@ -1,0 +1,27 @@
+---
+layout: page
+permalink: /blog
+permalink_name: blog
+title: blog
+---
+
+<ul class="blog_entries">
+    {% for post in site.posts %}
+      <li> 
+        <h2><a href="{{ post.url }}">{{ post.post-title | default:  post.title }}</a></h2>
+        {{ post.excerpt }}
+
+
+        Tags: 
+        {% for tags in post.tags %}
+          {{ tags }}
+        {% endfor %}
+        <br>
+        {{ post.date  | date: "%m/%d/%Y" }}&nbsp; &nbsp; &nbsp; &nbsp;
+        AutorIn: {{ post.author }}
+
+        <br>
+        <br>
+      </li>
+    {% endfor %}
+  </ul>
