@@ -1,2 +1,0 @@
-
-# Website of the HTR
