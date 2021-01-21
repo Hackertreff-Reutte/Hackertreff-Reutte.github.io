@@ -13,13 +13,13 @@ Nach einer gediegenen Brainstorming-Runde, in welcher Ideen zu Aussehen, Vorgehe
 
 Zuerst wurden die Platten auf das richtige Maß zugeschnitten.
 
-<img src="{{ layout.post_assets | liquify }}/mas-schneiden.jpg" class="picture_center" style = "width: 30%; height: auto;"/>
+<img src="{{ layout.post_assets | liquify }}/mas-schneiden.jpg" class="picture_center" style = "width: 30%; height: auto;" alt="Holzplatten die auf Maß geschnitten wird"/>
 
 Nun hatten wir alle nötigen Begrenzungslinien eingezeichnet und es stellte sich die Frage, wie wir die Buchstaben auf die Platten bekommen, sodass deren Größe und Abstand zueinander optional ist.
 Nach langem Überlegen kamen wir zu folgender Lösung.
 
 
-<img src="{{ layout.post_assets | liquify }}/projektor.jpg" class="picture_center" style = "width: 60%; height: auto;"/>
+<img src="{{ layout.post_assets | liquify }}/projektor.jpg" class="picture_center" style = "width: 60%; height: auto;" alt="Holzplate mit hinauf projizierten Schriftzug"/>
 
 Wir stellten die Platte vor einen Beamer und projizierten die Schrift gespiegelt auf die Platte.
 Der Schriftzug der hier zu erkennen ist besteht eigentlich aus 2 verschiedenen Schriftarten, da uns einige Buchstaben bei der jeweiligen Schriftart einfach nicht gefielen.
@@ -27,7 +27,7 @@ Kurz gesagt, haben wir das beste der beiden Schriftarten vereint.
 Danach ging es weiter mit dem Ausschneiden der Buchstaben.
 
 
-<img src="{{ layout.post_assets | liquify }}/ausschneiden.jpg" class="picture_center" style = "width: 40%; height: auto;"/>
+<img src="{{ layout.post_assets | liquify }}/ausschneiden.jpg" class="picture_center" style = "width: 40%; height: auto;" alt="Holzplatte wo die Buchstaben gerade ausgeschnitten werden"/>
 
 Nach einigen Stunden Arbeit war es dann geschafft. Die Buchstaben waren ausgeschnitten und zu unserer Verwunderung brachen uns die unstabilen Stellen nicht weg. Hurray.
 Nun musste nur noch die Rückseite zusammengeschraubt und angemalt (ansonsten gäbe es zu wenig Kontrast) werden.
@@ -39,8 +39,8 @@ Mithilfe einiger Freiwilliger des Werkhauses war jedoch auch dies kein Problem.
 
 So, das Ende naht, jetzt mussten nur noch die WS2812 LED-Strips angebracht und mit Strom versorgt werden. Nach einigem Debuggen und bisschen Code schreiben war das Projekt abgeschlossen.
 
-<img src="{{ layout.post_assets | liquify }}/sign_leuchten1.jpg" class="picture_center" style = "width: 50%; height: auto;"/>
-<img src="{{ layout.post_assets | liquify }}/sign_leuchten2.jpg" class="picture_center" style = "width: 50%; height: auto;"/>
+<img src="{{ layout.post_assets | liquify }}/sign_leuchten1.jpg" class="picture_center" style = "width: 50%; height: auto;" alt="Beleuchtetes Schild v1"/>
+<img src="{{ layout.post_assets | liquify }}/sign_leuchten2.jpg" class="picture_center" style = "width: 50%; height: auto;" alt="Beleuchtetes Schild v2"/>
 
 Weitere Dokumentation zum Schild und zum Programmcode folgt.
 

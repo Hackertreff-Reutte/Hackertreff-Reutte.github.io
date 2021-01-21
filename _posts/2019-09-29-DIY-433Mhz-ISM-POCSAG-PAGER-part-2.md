@@ -14,6 +14,6 @@ Nachdem diese Schritte erfolgt sind, wird ein weiters Update auf der Website zu 
 
 Hier die Platine:
 
-<img src="{{ layout.post_assets | liquify }}/adapter.jpg" class="picture_center" style="width: 30%; height: auto;" />
+<img src="{{ layout.post_assets | liquify }}/adapter.jpg" class="picture_center" style="width: 30%; height: auto;" alt="Adapterplatine für SI4432"/>
 
 ~HTR
