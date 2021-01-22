@@ -7,44 +7,41 @@ tags: Arduino Projekt Werkhaus-Reutte
 
 
 
-Da die Eröffnung des Werkhauses immer näher rückt, kam die Idee auf etwas dafür zu basteln. Und was passt besser auf eine leere Wand als ein großes Schild mit fancy LED Beleuchtung?
+Da die Eröffnung des Werkhauses immer näher rückte, kam die Idee etwas dafür zu basteln. Nach kurzen Brainstormen kam uns die Idee: Was passt besser auf eine kahle,leere Wand als ein großes Schild mit fancy LED-Beleuchtung?
 
-Nach einer gediegenen Brainstorming-Runde, in welcher Ideen zu Aussehen, Vorgehensweise und Material gesammelt wurden, kamen wir zu dem Entschluss aus einer Sperrholzplatte den Schriftzug “Werkhaus” auszuschneiden und indirekt zu Beleuchten.
+Eine weitere gediegenen Brainstorming-Runde später und das Aussehen, die Vorgehensweise und das Material stand fest. Als Basis sollte eine Sperrholzplatte dienen, aus welcher der Schriftzug “Werkhaus” herausgeschnitten werden sollte, um eine indirekte Beleuchtung mittels LEDs zu ermöglichen.
 
-Zuerst wurden die Platten auf das richtige Maß zugeschnitten.
+Im Folgenden findest du die Dokumentation unserer Arbeit, vielleicht kann sie ja die ein oder andere Person zu einem eigenen Projekt inspirieren. :)
+Viel Spaß beim Lesen!
 
-<img src="{{ layout.post_assets | liquify }}/mas-schneiden.jpg" class="picture_center" style = "width: 30%; height: auto;" alt="Holzplatten die auf Maß geschnitten wird"/>
 
-Nun hatten wir alle nötigen Begrenzungslinien eingezeichnet und es stellte sich die Frage, wie wir die Buchstaben auf die Platten bekommen, sodass deren Größe und Abstand zueinander optional ist.
-Nach langem Überlegen kamen wir zu folgender Lösung.
+Schritt 1: Zuerst wurden die Platten auf das richtige Maß zugeschnitten.
+
+<img src="{{ layout.post_assets | liquify }}/mas-schneiden.jpg" class="picture_center" style = "width: 30%; height: auto;" alt="Holzplatte die auf das Maß zugeschnitten wird"/>
+
+Schritt 2: Anschließend haben wir alle nötigen Begrenzungslinien eingezeichnet und so stellte sich die Frage, wie wir die Buchstaben auf die Platten bekommen, sodass deren Größe und Abstand zueinander optimal ist. Nach langem Überlegen kamen wir auf folgende Lösung:
 
 
 <img src="{{ layout.post_assets | liquify }}/projektor.jpg" class="picture_center" style = "width: 60%; height: auto;" alt="Holzplate mit hinauf projizierten Schriftzug"/>
 
-Wir stellten die Platte vor einen Beamer und projizierten die Schrift gespiegelt auf die Platte.
-Der Schriftzug der hier zu erkennen ist besteht eigentlich aus 2 verschiedenen Schriftarten, da uns einige Buchstaben bei der jeweiligen Schriftart einfach nicht gefielen.
-Kurz gesagt, haben wir das beste der beiden Schriftarten vereint.
-Danach ging es weiter mit dem Ausschneiden der Buchstaben.
-
+Schritt 3: Wir stellten die Platte vor einen Beamer und projizierten die Schrift gespiegelt auf die Platte. So war der Abstand zwischen den Buchstaben regelmäßig und wir konnten wie von einer Vorlage abzeichnen.
+Der Schriftzug der im nächsten Bild zu sehen ist, besteht eigentlich aus 2 verschiedenen Schriftarten, da uns einige Buchstaben bei der jeweiligen Schriftart einfach nicht gefielen. Kurz gesagt, haben wir das beste der beiden Schriftarten vereint.
 
 <img src="{{ layout.post_assets | liquify }}/ausschneiden.jpg" class="picture_center" style = "width: 40%; height: auto;" alt="Holzplatte wo die Buchstaben gerade ausgeschnitten werden"/>
 
-Nach einigen Stunden Arbeit war es dann geschafft. Die Buchstaben waren ausgeschnitten und zu unserer Verwunderung brachen uns die unstabilen Stellen nicht weg. Hurray.
-Nun musste nur noch die Rückseite zusammengeschraubt und angemalt (ansonsten gäbe es zu wenig Kontrast) werden.
+Schritt 4: Danach ging es weiter mit dem Ausschneiden der Buchstaben. Nach einigen Stunden war die Arbeit dann endlich geschafft. Die Buchstaben waren ausgeschnitten und zu unserer Verwunderung brachen uns die unstabilen Stellen nicht weg. Hurray.
+
+Schritt 5: Nun musste nur noch die Rückseite zusammengeschraubt und angemalt (ansonsten gäbe es zu wenig Kontrast) werden.
 
 <br>
 
-Nun war es geschafft, jetzt fehlte nur noch der Transport ins Werkhaus und die Verkabelung.
+Glücklich mit dem Resultat, mussten wir nur noch den Transport ins Werkhaus organisieren und uns vor Ort um die Verkabelung kümmern. 
 Mithilfe einiger Freiwilliger des Werkhauses war jedoch auch dies kein Problem.
 
-So, das Ende naht, jetzt mussten nur noch die WS2812 LED-Strips angebracht und mit Strom versorgt werden. Nach einigem Debuggen und bisschen Code schreiben war das Projekt abgeschlossen.
+Im Werkhaus angekommen haben wir noch die WS2812 LED-Strips angebracht und mit Strom versorgt werden. Um die LEDs besser steuern zu können, haben wir sie noch mit einem entsprechendem Programm versorgt, womit das Projekt abgeschlossen war.
 
 <img src="{{ layout.post_assets | liquify }}/sign_leuchten1.jpg" class="picture_center" style = "width: 50%; height: auto;" alt="Beleuchtetes Schild v1"/>
 <img src="{{ layout.post_assets | liquify }}/sign_leuchten2.jpg" class="picture_center" style = "width: 50%; height: auto;" alt="Beleuchtetes Schild v2"/>
-
-Weitere Dokumentation zum Schild und zum Programmcode folgt.
-
-Die Idee ist, dass es jedem Mitglied möglich sein sollte sein eigenes Programm auf dem Schild zum laufen zu bringen. Sodass das Ganze zu einem Community Projekt wird.
 
 Mitwirkende Personen:
 Alex, Bene, Jojo

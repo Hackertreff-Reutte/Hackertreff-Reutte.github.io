@@ -6,11 +6,11 @@ tags: Hacking
 ---
 
 Abends um halb 4 unter der Woche. Was macht man da? Klar, Router hacken!
-Idee: Router Firmware modifizieren, Webinterface ändern und ggf. mehr Features.
-Ergebnis: Stand 4.6.2019 Jup Router hat zu wenig Speicher #2MBSucks
+Idee: Router-Firmware modifizieren, Webinterface ändern und ggf. mehr Features hinzufügen.
+Ergebnis: Stand 4.6.2019 -> Jup, Router hat zu wenig Speicher #2MBSucks
 
 Was wurde erreicht?
-UART Kommunikation mit dem Router + Telenet Zugang root
+UART-Kommunikation mit dem Router + Telenet-Zugang root
 squashfs (read-only)
 
 Was wird ggf. noch gemacht sofern Motivation besteht?
