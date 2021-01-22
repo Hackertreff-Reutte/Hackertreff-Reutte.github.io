@@ -3,6 +3,7 @@
 source "https://rubygems.org"
 gemspec
 
+gem "html-proofer"
 # Including GitHub Pages gem
 gem "jekyll", group: :jekyll_plugins
 

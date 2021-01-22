@@ -11,27 +11,27 @@ Schon seit der HTR gegründet wurde wollten wir ein Logo, welches uns repräsent
 
 Beim Aufsetzen der Webseite wurden natürlich schon erste Vorschläge gemacht, einer davon wurde zum vorübergehenden Logo erklärt (Siehe Bild)
 
-<img src="{{ layout.post_assets | liquify }}/logo_handdrawn.jfif" class="picture_center" />
+<img src="{{ layout.post_assets | liquify }}/logo_handdrawn.jfif" class="picture_center" alt="handgezeichnetes erste Logoidee"/>
 <center>Hand-gezeichnetes erster Logoversuch</center>
 
 Da keiner der Mitglieder eine gute Vorlage für das Logo liefern konnte, kamen wir auf die Idee einige Vorschläge in Auftrag zu geben. Der zweite Vorschlag den wir erhielten wurde schließlich einstimmig für gut befunden. (Siehe Bild)
 
-<img src="{{ layout.post_assets | liquify }}/logo_freelancer.jpg" class="picture_center" style = "width: 40%; height: auto;"/>
+<img src="{{ layout.post_assets | liquify }}/logo_freelancer.jpg" class="picture_center" style = "width: 40%; height: auto;" alt="Logo das von einem Freelancer erstellt wurde"/>
 <center>Vorschlag 2 eines Freelancers</center>
 
 Natürlich musste daran noch etwas herumgebastelt werden. In Ermangelung eines guten Grafikprogrammes wurde von Bene mittels eines CAD-Programms ein dreidimensionaler Neuentwurf des Vorschlages erstellt. (Siehe Bild)
 
-<img src="{{ layout.post_assets | liquify }}/logo_3d.png" class="picture_center" />
+<img src="{{ layout.post_assets | liquify }}/logo_3d.png" class="picture_center" alt="HTR Logo in 3D (CAD)"/>
 <center>3D-Modell des von Bene verbesserten Logos</center>
 
 Das Herzstück des Logos ist der Chip, welcher sich jederzeit gegen andere Piktogramme ersetzen lässt. Auf diese Weise ist es möglich das Logo immer wieder für unterschiedliche Zwecke abzuwandeln. (siehe Bild)
 
-<img src="{{ layout.post_assets | liquify }}/logo_fertig.png" class="picture_center" />
+<img src="{{ layout.post_assets | liquify }}/logo_fertig.png" class="picture_center" alt="Fertiges HTR Logo")"/>
 <center>Fertiges Logo : 2D Ansicht in den vom HTR beschlossenen Farben</center>
 
 Das beste Beispiel dafür ist das einsetzen eines QR-Codes. (Siehe Bild)
 
-<img src="{{ layout.post_assets | liquify }}/logo_qr.png" class="picture_center" />
+<img src="{{ layout.post_assets | liquify }}/logo_qr.png" class="picture_center" alt="HTR Logo mit QR-Code"/>
 <center>Logo bei dem der Chip durch einen QR-Code ersetzt wurde QR-Code der zur HTR Webseite führt</center>
 
 
