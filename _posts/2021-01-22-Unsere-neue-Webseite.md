@@ -22,4 +22,3 @@ Wir freuen uns schon sehr darauf wieder gemeinsam an Projekten arbeiten zu könn
 diskutieren zu können, vielleicht dann sogar mit dir. Bis dahin kannst du unsere Projekte hier auf der Webseite verfolgen. 
 
 ~ HTR
-
