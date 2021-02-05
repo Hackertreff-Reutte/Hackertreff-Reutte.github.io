@@ -1,0 +1,16 @@
+---
+layout: none
+---
+
+User-agent: *
+Allow: /
+Allow: /blog.html
+Allow: /telegram.html
+Allow: /faq.html
+
+Disallow: /2020/
+Disallow: /2021/
+Disallow: /2022/
+Disallow: /2023/
+Disallow: /2024/
+Disallow: /2025/
