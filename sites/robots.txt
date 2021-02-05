@@ -1,5 +1,7 @@
 ---
 layout: none
+permalink: /robots.txt
+permalink_name: robots.txt
 ---
 
 User-agent: *
