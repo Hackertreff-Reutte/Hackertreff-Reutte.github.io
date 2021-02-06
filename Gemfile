@@ -11,5 +11,6 @@ gem "jekyll", group: :jekyll_plugins
 group :jekyll_plugins do
   gem 'jemoji'
   gem 'jekyll-seo-tag'
+  gem 'jekyll-sitemap'
 end
 
