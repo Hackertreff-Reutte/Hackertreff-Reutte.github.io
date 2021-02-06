@@ -7,7 +7,7 @@ email: HackertreffReutte@protonmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   A paragraph describing your webpage.
 baseurl: "/" # the subpath of your site
-url: "hackertreffreutte.at" # the base hostname & protocol for your site
+url: "hackertreff-reutte.com" # the base hostname & protocol for your site
 telegram_username: HackertreffReutte
 github_username:  Hackertreff-Reutte
 
