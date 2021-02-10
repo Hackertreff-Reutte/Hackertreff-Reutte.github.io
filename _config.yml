@@ -34,5 +34,14 @@ header_pages:
 # controls how big the shell and font looks
 font-size: small # options: [small] or [large]
 
-
+#excludes files / folders from being build
 exclude: [pull_build.sh, vendor/]
+
+
+#exclude all posts from the sitemap
+defaults:
+  -
+    scope:
+      path: '_posts/**'
+    values:
+      sitemap: false
