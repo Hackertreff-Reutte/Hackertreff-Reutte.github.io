@@ -25,6 +25,7 @@ für POCSAG. Eine ausführlichere erläuterung ist weiter unten im Post zu finde
 * Datenrate
 * Modulationstyp
 * Modulationdata Source
+* Direct Mode
 * Senden (direct mode)
 * Daten empfangen (direct mode) (falls Sender vorhanden)
 * power level
@@ -230,7 +231,7 @@ void printFrequency(){
 
   uint8_t fbsr = read(0x75);
 
-  uint8_t hbsel = (fbsr >> 5) && 0b1;
+  uint8_t hbsel = (fbsr >> 5) & 0b1;
   uint8_t fb = fbsr & 0b11111;
 
   uint8_t fc_higher = read(0x76);
@@ -289,7 +290,8 @@ sie mit dem XLS Dokument von Silicon-Labs überein.
 
 # Datenrate 
 
-Die Datenrate ist konfigurierbar zwischen 1 - 128 kbps.
+Die Datenrate ist konfigurierbar zwischen 1 - 128 kbps / 0.123 - 256 kbps.
+(Je nach Datenblatt)
 Achtung wenn die Datenrate unter 30 kbps liegt muss "txdtrtscale" im Register
 70h auf 1 gesetzt werden andernfalls 0.
 
@@ -319,6 +321,11 @@ void setDataRate(double datarate){
   double scale;
   uint8_t txdr;
 
+  if(datarate < 1 || datarate > 128){
+    Serial.print("Datarate out of bounds");
+    return;
+  }
+
   if (datarate < 30){
     txdtrtscale = 1;
     scale = 2097152.0;
@@ -337,6 +344,15 @@ void setDataRate(double datarate){
   write(0x70, (read(0x70) & 0b11011111) ^ (txdtrtscale << 5));
 }
 ```
+
+Info für Direct Mode:
+
+Wenn der Direct Mode verwendet (zb mit FSK), dann ist diese Einstellung relativ
+sinnlos, da die Datenrate über die Geschwindigkeit der übertragenden Daten 
+festgelegt wird. Folglich sollten die Daten auch ununterbrochen übertragen
+werden, da es sonst zu verschiedenen Datenraten kommen kann (Wichtig bei zB.
+SPI)
+
 
 <br>
 
@@ -360,14 +376,285 @@ Diese Wert kann im Register 71h "Modulation Mode Control 2" festgeschrieben werd
 void setModulationType(uint8_t typ){
 
   if(typ > 3){
-    Serial.println("Invalid Mod Type")
+    Serial.println("Invalid Mod Type");
+    return;
   }
 
   //update the first 2 fields / bits (modtyp)
-  write(0x71, (read(0x71) & 0b11) | type);
+  write(0x71, (read(0x71) & 0b11111100) | typ);
 }
 ```
 
 <br>
 
 # Modulationdata Source
+
+Der SI4432 unterstützt verschiedene Methoden um Sende-Daten an den Chip zu
+übertragen.
+* Direct Mode mit TX_Data via GPIO pin (0b00)
+* Direct Mode mit TX_Data via SDI pin (nur wenn nSEL HIGH ist) (0b01)
+* FIFO Mode (0b10)
+* PN9 (internally generated) (0b11)
+
+Achtung: für Direct Mode mit GPIO muss der Pin auch noch konfiguriert werden.
+Weiters muss auch definiert werden welche Clock verwendet wird. (See Direct Mode)
+
+Der Wert für die Modulationsdatenquelle muss ins Register 71h geschrieben werden. (dtmod)
+
+```c
+#define SOURCE_DIRECT_GPIO 0b00
+#define SOURCE_DIRECt_SPI 0b01
+#define SOURCE_FIFO 0b10
+#define SOURCE_PN9 0b11
+
+void setModulationDataSource(uint8_t source){
+
+  if(source > 3){
+    Serial.println("Invalid Data Source");
+    return;
+  }
+
+  //update the value
+  write(0x71, (read(0x71) & 0b11001111) | (source << 4));
+
+}
+```
+
+<br>
+
+# Direct Mode
+
+Wenn der Direct Mode verwendet wird muss noch definiert über welchen Pin die
+Clock übertragen wird. Dies wird in dem Register "Modulation Mode Control 2"
+(71h) festgelegt und es gibt folgende Möglichkeiten.
+
+* No TX Data CLK (0b00)
+* TX Data CLK is available via the GPIO pin (0b01)
+* TX Data CLK is available via the SDO pin (0b10)
+* TX Data CLK is available via the nIRQ pin (0b11)
+
+Da wir eine FSK verwenden wollen braucht es keinen extra Clock Pin.
+
+```c
+#define NO_TX_DATA_CLK 0b00
+#define TX_CLK_GPIO 0b01
+#define TX_CLK_SDO 0b10
+#define TX_CLK_nIRQ 0b11
+
+void setDirectClockSource(uint8_t source){
+
+  if(source > 3){
+    Serial.println("Invalid Clock Source");
+  }
+
+  write(0x71, (read(0x71) & 0b00111111) | (source << 6));  
+}
+```
+163.175
+<br>
+
+# Senden (direct mode)
+
+Achtung: Hierbei wird der SPI des ESP32 im DMA Modus verwendet.
+
+Nun haben wir alle Funktionen um Signale zu senden. Jedoch benötigen wir noch Programme mit denen wir uns POCSAG Nachrichten erstellen können.
+
+Hierfür verwende ich ein kleines Python Programm:
+
+```python
+from pocsag import encodeTXBatch
+msgs = []
+# Format = [ IsNumeric, Address(also supports A,B,C,D suffix like "133703C"), Message ]
+msgs.append([False, "1337", 'Test POCSAG 123'])
+data = encodeTXBatch(msgs) #, repeatNum = 2, inverted = False
+
+
+print (format(85,'08b'))
+
+binData = [format(x, '08b') for x in data]
+
+
+bit32Data = [ ''.join(x) for x in zip(binData[0::4], binData[1::4], binData[2::4], binData[3::4])]
+
+for x in bit32Data:
+    print ("tx_temp = add32Bit(tx_temp, 0b" + x + ");")
+
+print ("Lines: " + str(len(bit32Data)) + "   Transfered Bits: " + str(len(bit32Data) * 32))
+```
+
+Wichtig ist es sich die Transfered Bits zu merken, da dies die Menge an Bits it die der SPI übertragen muss, da sonst nicht alle Daten übertragen wurden.
+
+Das Modul das in diesem Script verwendet wird wurde von cuddlycheetah erstellt. 
+Link zu der Github-Repo: <a href="https://github.com/cuddlycheetah/python-pocsag">Github</a>
+
+Das Script erstellt eine Ausgabe welche direkt in das ESP32 Projekt kopiert
+werden kann. Jedoch benötigt sie die add32Bit() Funktion. Diese ist
+folgendermaßen aufgebaut.
+
+```c
+uint8_t * add32Bit(uint8_t* tx, uint32_t data){
+    tx[0] = (data >> 24) & 0xFF;
+    tx[1] = (data >> 16) & 0xFF;
+    tx[2] = (data >> 8) & 0xFF;
+    tx[3] = (data >> 0) & 0xFF;
+    return tx + 4;
+}
+```
+
+Somit haben wir nun das Payload das wir übertragen woll und müssen nur noch 
+vorher den den Chip vorbereiten. (Frequenz setzen, Deviation usw.)
+
+
+```c
+    Serial.println("Setting Frequency");
+    setFrequency(433);
+    delay(100);
+    Serial.println("Setting Deviation");
+    setDeviation(4.5);
+    delay(100);
+    Serial.println("Setting Modulation");
+    setModulationType(FSK);
+    delay(100);
+    Serial.println("Setting Modulation Source");
+    setModulationDataSource(SOURCE_DIRECt_SPI);
+    delay(100);
+    Serial.println("Setting Modulation CLK Source");
+    setDirectClockSource(NO_TX_DATA_CLK);
+    delay(100);
+    Serial.println("Enable TX MODE");
+    setTXMode();
+```
+Info: Funktionen wurden in den vorherigen Kapiteln aufgeführt. Weiters gibt es zum Schluss Links zu den Source-files.
+
+Die Datenrate muss nicht gesetzt werden, da diese durch die Geschwindigkeit,
+des SPIs vorgegeben wird.
+Kurzgesagt: Wenn das SPI die Daten mit 512bps übertragen werden dann werden 
+sie auch mit 512kps gesendet. 
+
+
+Hier nochmal der komplette Sende-Vorgang  in einer Funktion:
+
+```c
+void sendData(){
+  Serial.println("Setting Frequency");
+    setFrequency(433);
+    delay(100);
+    Serial.println("Setting Deviation");
+    setDeviation(4.5);
+    delay(100);
+    Serial.println("Setting Datarate");
+    setDataRate(5);
+    delay(100);
+    Serial.println("Setting Modulation");
+    setModulationType(FSK);
+    delay(100);
+    Serial.println("Setting Modulation Source");
+    setModulationDataSource(SOURCE_DIRECt_SPI);
+    delay(100);
+    Serial.println("Setting Modulation CLK Source");
+    setDirectClockSource(NO_TX_DATA_CLK);
+    delay(100);
+    Serial.println("Enable TX MODE");
+    setTXMode();
+
+    uint8_t * tx_temp = tx_buf;
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b01010101010101010101010101010101);
+    tx_temp = add32Bit(tx_temp, 0b10000011001011011110101000100111);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b11110111110101101110011000101010);
+    tx_temp = add32Bit(tx_temp, 0b01101010010110000110011111101011);
+    tx_temp = add32Bit(tx_temp, 0b00110100001111101100100100000011);
+    tx_temp = add32Bit(tx_temp, 0b00001011001110000011100010111010);
+    tx_temp = add32Bit(tx_temp, 0b10000011001011011110101000100111);
+    tx_temp = add32Bit(tx_temp, 0b00011011001001100111000100010000);
+    tx_temp = add32Bit(tx_temp, 0b01001111110111011100111101001001);
+    tx_temp = add32Bit(tx_temp, 0b00100111111111111111111101100101);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000011001011011110101000100111);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b11110111110101101110011000101010);
+    tx_temp = add32Bit(tx_temp, 0b01101010010110000110011111101011);
+    tx_temp = add32Bit(tx_temp, 0b00110100001111101100100100000011);
+    tx_temp = add32Bit(tx_temp, 0b00001011001110000011100010111010);
+    tx_temp = add32Bit(tx_temp, 0b10000011001011011110101000100111);
+    tx_temp = add32Bit(tx_temp, 0b00011011001001100111000100010000);
+    tx_temp = add32Bit(tx_temp, 0b01001111110111011100111101001001);
+    tx_temp = add32Bit(tx_temp, 0b00100111111111111111111101100101);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+    tx_temp = add32Bit(tx_temp, 0b10000101011101100011111001101000);
+  
+
+    //DMA SPI (could change in the final release, but is not that hard to implement)
+    spi.beginTransaction(HSPI, SPI_MODE0, 512);
+    spi.transfer(3000, tx_buf, rx_buf); 
+    spi.endTransaction();
+
+    delay(100);
+
+    Serial.println("Reset");
+    reset();
+}
+```
+
