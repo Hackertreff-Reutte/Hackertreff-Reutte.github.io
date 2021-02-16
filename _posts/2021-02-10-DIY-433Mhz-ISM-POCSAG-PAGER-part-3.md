@@ -1500,3 +1500,27 @@ theortische mithilfe des internen Temperatursensors ausgeglichen werden.
 <br>
 
 # Sende-Leistung
+
+Die Sendeleistung des Chips kann im Register 6Dh "TX Power" eingestellt werden.
+
+Für die Leistung gibt es 4 Stufen:
+* +11 dBm (0b00)
+* +14 dBm (0b01)
+* +17 dBm (0b10)
+* +20 dBm (0b11)
+
+```c
+#define POWER_11dB 0b00
+#define POWER_14dB 0b01
+#define POWER_17dB 0b10
+#define POWER_20dB 0b11
+void setPowerLevel(uint8_t level){
+
+  if(level > 3){
+    Serial.println("Power level too big");
+    return;
+  }
+
+  write(0x6D, (read(0x6D) & 0b11111100) | level);
+}
+```
