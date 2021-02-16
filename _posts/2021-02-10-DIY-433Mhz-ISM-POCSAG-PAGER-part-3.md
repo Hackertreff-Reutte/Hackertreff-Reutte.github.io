@@ -33,6 +33,7 @@ für POCSAG. Eine ausführlichere erläuterung ist weiter unten im Post zu finde
 * SYNC Wort
 * RX Modem
 * Empfangen (direct mode)
+* Quarz / Frequenz tuning
 * power level
 * AFC
 
@@ -1184,3 +1185,247 @@ ein bisschen zu streng ist. Dieses Problem wird aber später behandelt.
 
 <br>
 
+# Empfangen (direct mode)
+
+Daten mit dem SI4432 empfangen kann ein bisschen trickreich sein, da es relativ
+schwer ist den Chip zu debuggen. Daher würde ich empfehlen folgende Dinge per
+Hand zu haben.
+
+* RTL-SDR (Software Definded Radio) (RX)
+* Funkgerät (zb. Baofeng)
+* Osziloskop / Logic Analyszer.
+
+Anstelle des Funkgerätes kann auch ein SDR mit Sendefähigkeit verwendet werden.
+Es ist natürlich auch möglich die folgenden Schritte ohne dieses Equipment
+durchzuführen, jedoch ist es dann schwerer Fehler schnell zu erkennen.
+Bzw den Chip sinvoll einzustellen.
+
+Zur Info:
+
+RX Chip ----senden----> TX Chip
+
+
+Normalesweise könnten wir das Offset-Register verändern, um den Sender auf 
+die richtige Frequenz zu tunen. Jedoch geht dies in diesem Fall nicht, da der
+AFC (Automatic Frequency Controll) das Register verändert und somit unseren
+Offset zu nichte macht. 
+
+Meiner Erfahrung nach geht es am leichtesten den Offset auf 0 zu belassen und 
+mit dem RX Chip einmal Daten auszusenden (siehe Senden (direct mode)).
+Mit dem SDR-RTL kann dann nachgesehen werden auf welcher Frequenz der Chip die 
+Daten genau aussendet. Denn meistens Senden die Chips nicht auf der 
+eingestellten Frequenz. (liegt vil an der Ungenauigkeit des Quarzes).
+
+Wenn nun die eigentliche Frequenz ermittelt wurde, dann kann beim TX Chip der
+Offset so eingestellt werden das dieser genau auf dieser Frequenz sendet. 
+Beim TX Chip können wir das Offset Register verändern das der AFC das Register
+nur im RX Modus verändert.
+
+Offset einstellen:
+```c
+//offset in khz
+void setOffset(double offset){
+
+  uint8_t fbsr = read(0x75);
+  uint8_t hbsel = (fbsr >> 5) & 0b1;
+
+  uint16_t fo = offset / (0.15625 * (hbsel + 1));
+
+  write(0x73, fo & 0xFF);
+  write(0x72, (fo >> 8) & 0b11);
+}
+```
+Info: Offset sind nicht wirklich in khz (Formel passt wahrscheinlich nicht ganz, also einfach eher nach Gefühl einstellen)
+
+Mit dem RTL-SDR können wir dann wieder abgleichen ob der TX Chip nun auf der 
+richtigen Frequenz sendet. 
+
+Bsp Code für den TX-Chip: Code:
+```
+void loop() {
+  
+  if(Serial.available()){
+
+    //--------do spi stuff here-------
+
+    setOffset(22);
+    sendData();
+    reset();
+
+    //---------------------------------
+
+    delay(1500);
+    while(Serial.available()){
+      Serial.read();
+    }
+  }
+
+  delay(100);
+}
+```
+Offset ist bei jedem Chip anderes. (Gleiche Register-Werte bei 2 Chip = 2 
+verschiedene Frequenzen)
+
+Da nun die TX-Seite eingestellt ist und die Frequenzen angeglichen sind,
+kommen wir nun wieder zum RX Chip und kümmern uns um den Empfang.
+
+Für den Empfang müssen folgende Sachen eingestellt werdne:
+* Frequenz
+* Deviation
+* Datenrate
+* Modulationstyp
+* Packet Handel (disable)
+* Preamble
+* SYNC Wort
+* RX-Modem
+* RX Mode
+
+```c
+void receive(){
+  Serial.println("Setting Frequency");
+  setFrequency(433);
+  delay(100);
+  Serial.println("Setting Deviation");
+  setDeviation(4.5);
+  delay(100);
+  Serial.println("Setting Datarate");
+  setDataRate(1.2);
+  delay(100);
+  Serial.println("Setting Modulation");
+  setModulationType(FSK);
+  delay(100);
+  Serial.println("Disable Packet Handler");
+  disablePacketHandler();
+  delay(100);
+  Serial.println("Setting Peramble");
+  setPreamble(72,20);
+  delay(100);
+  Serial.println("Setting SYNC Words");
+  setSYNC_Word(SYNC_WORD_4Byte, 0b10000011001011011110101000100111);  
+  delay(100);
+  Serial.println("Setting Modem");
+  setupModem(1.2,4.5,0);
+  delay(100);
+  setRXMode();
+}
+```
+
+Nun wurden alle alle benötigten Register eingestellt.
+
+Info: Wenn ein Chip RX und TX können soll dann reicht theoretisch auch eine
+Funnktion aus die die Dinge für RX und TX einstellt. (Einfach bei RX die 
+fehlenden Sachen von TX hinzufügen oder anderersrum).
+
+Um das Offset Problem kümmern wir uns später.
+
+Nun muss nur noch der Chip in den RX Modus versetzt werden. Dies geschied wenn 
+im Register 07h "Operating Mode and Function Control 1" das Bit 2 rxon auf 1 gesetzt wird. 
+
+```c
+void setRXMode(){
+  write(0x07, (read(0x07) & 0b11111011) | 1 << 2);
+}
+```
+
+Wenn nun die Funktion receive() aufgerufen wird, werden alle Register richtig
+eingestellt und der Chip in den RX Modus versetzt.
+
+Da wir den Chip aber auch im RX direkt Modus verwenden wollen, müssen wir noch
+die empfangenen Daten herausführen. Dies funktioniert am besten wenn wir die
+Daten auf einen eigenen GPIO Pin schreiben und zusätzlich noch eine Clock auf 
+einen anderen GPIO Pin, damit zur richtigen Zeit abgetastet wird. 
+
+GPIOs konfigurieren geht relativ einfach. Man muss nur in das ensprechende
+Register des GPIOs einen Wert schreiben.
+
+GPIO Register:
+* GPIO0 -> 0Bh
+* GPIO1 -> 0Ch
+* GPIO2 -> 0Dh
+
+Welche funktionen die GPIOs genau haben wird später erläutert. 
+Für das Empfangen ist nur wichtig das wir einen als RX-Data definieren 
+und den anderen als TX/RX Data clock und dies kann mit folgendem Befehlt 
+erledigt werden.
+```c
+void enableRXOutputPins(){
+  write(0x0B, 0b10100); //RX Data on GPIO 0
+  write(0x0C, 0b01111); //RX Clock on GPIO 1
+}
+```
+
+Das messen der Output Pins funktioniert am besten mit einem Oszilloskop,
+sollte kein Osziloskop vorhanden sein, kann man auch das Preamble-Register
+abfragen. Dies funktioniert relativ gut wenn man kein Osiloskop dabei hat.
+Jedoch wenn etwas nicht funktioniert macht es das nicht gerade einfacher.
+In dem Register steht weiters noch ob das SYNC Wort erkannt wurde, daher kann dies auch gleich mit ausgegeben werden.
+
+Das Register (04h "Interrupt / Status 2") kann wie folgt abgefragt werden:
+```c
+void printPreambleAndSyncStatus(){
+  uint8_t status = read(0x04);
+
+  Serial.print("Valid Preamble: ");
+  Serial.println((status >> 6) & 1);
+  Serial.print("Invalid Preamble: ");
+  Serial.println((status >> 5) & 1);
+  Serial.print("SYNC Word detected: ");
+  Serial.println((status >> 7) & 1);
+}
+```
+
+Somit haben wir nun alles zusammen für die Empfangsseite:
+```c
+void loop() {
+  
+  if(Serial.available()){
+
+    //--------do spi stuff here-------
+    
+    receive();
+    enableRXOutputPins();
+    
+    //---------------------------------
+
+    delay(1500);
+    while(Serial.available()){
+      Serial.read();
+    }
+  }
+  printPreambleAndSyncStatus();
+  delay(100);
+}
+```
+
+Achtung! Es muss einmal ein Zeichen per UART gesendet werden, damit die RX 
+Register konfiguriert werden und der Chip in den RX Modus wechselt. 
+
+Wenn nun mit dem TX Chip Daten gesendet werden, sollten sie beim RX Data Pin 
+ausgegeben werden und zusätzlich sollte das Valid-Preamble-Bit kurz auf 1 sein
+und danach das SYNC-Word-Bit auch auf 1.
+Das Valid-Premable-Bit geht nach der Preamble wieder auf 0, wohingegen das
+SYNC-Word-Bit auf 1 bleibt.
+
+Somit wurde ein erfolgreicher Transfer durchgeführt.
+Hurray.
+
+Hier noch ein paar kleine Debug Tipps:
+* Wenn sich der RX-Chip in Receive gefindet aber nicht nichts empfängt, ggf 
+mit eine Handfunkgerät in der nähe der Frequenz senden und schauen ob der dann 
+was empfängt. Geräte wie das Baofeng erzeugen relativ viele Oberwellen und 
+senden dann auch auf Frequenzen die nicht erwünscht sind, aber genau so könnte 
+man die eigentlich Frequenz des RX Chips finden.
+* Wenn man die Frequenz gefunden hat und HIGH und LOW am RX Ausgang sehen will,
+aber kein Oszi hat, dann kann hier ein Handfunkgerät mit abgeschrauberter 
+Antenne helfen. Diese Funkgerät sendet relativ gut nur auf einer Frequenz, da
+die Oberwellen zu wenig Leistung haben um sichtbar zu sein. Somit kann man dann
+auf der gewünschten HIGH Frequenz senden und ein konstantes Signal am RX Data 
+Ausgang messen. 
+* Es empfielt sich auch Antennen an die SI4432 Chips anzubringen, 
+da sonst die Signale möglicherweise zu schwach sind.
+* Ein konstantes Monotoring mit einem RTL-SDR und zb gqwrx ist auch sehr
+hilfreich.
+
+<br>
+
+# Quarz / Frequenz tuning
