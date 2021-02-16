@@ -34,7 +34,7 @@ für POCSAG. Eine ausführlichere erläuterung ist weiter unten im Post zu finde
 * RX Modem
 * Empfangen (direct mode)
 * Quarz / Frequenz tuning
-* power level
+* Sende-Leistung
 * AFC
 
 <br>
@@ -1429,3 +1429,74 @@ hilfreich.
 <br>
 
 # Quarz / Frequenz tuning
+
+Wie wir beim Senden bemerkt haben stimmt die Frequenz des Chips nicht wirklich 
+mit der ein die wir eingestellt haben. Ich vermute das dies am Quarz liegt.
+Der Chip selbst bietet hierfür eine Lösung an und zwar kann man den Quarz ein 
+bissche "ziehen" (Frequenz verändern) um ihn auf die richtige Frequenz zu 
+tunen. 
+
+Die Werte für die Korrekte Frequenz kann mit einem RTL-SDR herausgefunden 
+werden. Jedoch muss davor der RTL-SDR kalibriert werden, da dieser sonst 
+die falschen Signale liefer (falscher Offset).
+Um den SDR zu kalibieren gibt es ein sehr nützlicher Projekt namens 
+kalibrate-rtl dies ist auf GitHub zu finden und verwendet GSM Stationen um 
+den Fehler des RTL-SDRs zu ermitteln. Dieser Fehler kann dann zb. gwrx 
+übergeben werden damit der offset angepasst wird.
+
+Link Github: <a href="https://github.com/steve-m/kalibrate-rtl"> klibrate-rtl</a>
+
+Verwendundung kalibrate-rtl:
+
+Zuerst muss nach den Basestation gesucht werden, es gibt verschiedene Arten von
+Basestations: GSM950, GSM900, EGSM, ... (-h für alle Optionen)
+```
+./kal -s GSM900
+```
+
+Wenn dieser Befehl erfolgreich durchgelaufen ist sollte er hoffentlich 
+ein paar Stationen auflisten, wenn nicht dann am besten ein anderes 
+Band auswählen.
+
+Wenn es Basestation gefunden hat kann eine für die Kalibrirung verwendet werden
+```
+./kal -c 15
+```
+(kalibriere mit Basestation auf Kanal 15)
+
+Dann sollte zum Schluss der Fehler in ppm ausgegeben werden.
+
+
+So nun haben wir einen kalibrierten RTL-SDR und können nun das Register 
+09h "Crystal Oscillator Load Capacitance" verwenden um den Si4432 richtig zu 
+tunen. 
+
+Leider habe ich keine sinvolle Formel gefunden mit der dieser Shift berechnet 
+werden kann.
+Somit ist das ein bisschen trial and error bis der Wert passt.
+```c
+//load 0 - 0b01111111 (127)
+void setCrystalLoadCap(uint8_t load){
+  write(0x09, (read(0x09) & 0b10000000) | (load & 0b01111111));
+}
+```
+Je höher die Load desto kleiner wird ist die Frequenz.
+
+Sollte dies nicht genug sein um den Quarz auf die richtige Frequnz zu ziehen, 
+wäre es auch eine Idee einfach die Frequenz ein bisschen kleiner zu machen.
+
+Info: Das Offset Register zu beschreiben ist keine gute Idee, da der AFC dies 
+im RX-Mode überschreibt und somit diesen Offset zu nichte macht.
+
+Achtung! Es könnte sein das dies negative Auswirkungen auf das Verhalten des 
+Chips hat, jedoch ist mir bis jetzt noch nichts aufgefallen und in Datenblatt 
+wird auch nichts erwähnt bezüglich Probleme. 
+
+Ich bin mir zu diesem Zeitpunkt auch noch nicht sicher wie sich die Temperatur 
+auf das Verhalten des Oszillators auswirkt. Kann mir gut vorstellen das eine
+Temperaturschwankung zu einer Frequenzschwankung führen kann. Diese könnte 
+theortische mithilfe des internen Temperatursensors ausgeglichen werden.
+
+<br>
+
+# Sende-Leistung
