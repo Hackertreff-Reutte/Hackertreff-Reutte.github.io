@@ -7,14 +7,14 @@ tags: AFU Arduino Funk Projekt Pager
 
 Nach langer Zeit geht es mit dem Projekt wieder ein bisschen weiter. 
 In diesem Post wird der SI4432 Chip genauer untersucht und versucht ihn als 
-ASK-Sender zu konfigurieren. Um ihn dann schlussendlich als 
+ASK-Sender zu konfigurieren, um ihn dann schlussendlich als 
 Sende- und Empfangschip für den Pager verwenden zu können.
 
 # Vorweg: 
 Die Nachrichten werden nicht mit dem eingebauten Buffer versendet, 
-da dieser Buffer zu klein ist um sinnvoll POCSAG Nachrichten empfangen und 
+da dieser Buffer zu klein ist, um sinnvoll POCSAG-Nachrichten empfangen und 
 senden zu können. Weiters ist auch das Packet-Handling nicht wirklich geeignet 
-für POCSAG. Eine ausführlichere erläuterung ist weiter unten im Post zu finden.
+für POCSAG. Eine ausführlichere Erläuterung ist weiter unten im Post zu finden.
 
 
 # Ziele:
@@ -54,8 +54,8 @@ Weiters hat der IDLE state 5 Unterzustände:
 * Ready Mode 
 * Tune Mode
 
-Bevor in einem Register ein Mode geschreiben wird, können wir zuerst aus dem "Device Status "Register (02h) auslesen in welchen Zustand wir und befinden.
-Die ersten 2 Bits (cps) zeigen an in welchen Status sich das gerät befindet.
+Bevor in einem Register ein Mode geschrieben wird, können wir zuerst aus dem "Device Status "Register (02h) auslesen, in welchem Zustand wir uns befinden.
+Die ersten 2 Bits (cps) zeigen an, in welchem Status sich das Gerät befindet.
 
 * 00 = Idle
 * 01 = RX
@@ -63,7 +63,7 @@ Die ersten 2 Bits (cps) zeigen an in welchen Status sich das gerät befindet.
 
 Achtung! Reset value des Registers ist nicht definiert. Jedoch sollte cps gesetzt sein.
 
-Nun können wir ein kleines Programm schreiben das testet in welchem Zustand sich der Chip befindet.
+Nun können wir ein kleines Programm schreiben, das testet in welchem Zustand sich der Chip befindet.
 
 ```c
 void printDeviceStatusRegister(){
@@ -74,18 +74,18 @@ void printDeviceStatusRegister(){
 
 Ergebnis = 1111111111111111
 
-Wie wir erkennen hat und der SPI nichts sinvolles geliefert. Dies liegt daran das der SPI-Bus in Shutdown-Zustand deaktiviert ist.
+Wie wir erkennen können, hat uns der SPI nichts Sinnvolles geliefert. Dies liegt daran, dass der SPI-Bus im Shutdown-Zustand deaktiviert ist.
 Um nun den Shutdown-Zustand zu verlassen (SDN == HIGH -> Shutdown-State)
-und den IDLE Zustand zu betretten wird der SDN auf LOW gezogen.
-Danach wird wieder mit den Code von oben überprüft in welchem Zustand wir uns befinden.
+und den IDLE-Zustand zu betreten, wird der SDN auf LOW gezogen.
+Danach wird wieder mit dem Code von oben überprüft in welchem Zustand wir uns befinden.
 
 Ergebnis = 0 (= 00000000)
 
-Somit erkennen wir das sich der Chip momentan in dem IDLE Zustand befindet.
+Somit erkennen wir, dass sich der Chip momentan in dem IDLE-Zustand befindet.
 
-Um nun den Modus des IDLE Zustand zu wechseln kann das Register "Operating Mode and Function Control 1" (07h) verwendet werden.
+Um nun den Modus des IDLE-Zustand zu wechseln, kann das Register "Operating Mode and Function Control 1" (07h) verwendet werden.
 
-Dieses lesen wir zuert einmal aus um zu sehen, wie es momentan konfiguriert ist. Laut Datenblatt sollte der Reset-Wert = 00000001 sein.
+Dieses lesen wir zuerst einmal aus, um zu sehen, wie es momentan konfiguriert ist. Laut Datenblatt sollte der Reset-Wert = 00000001 sein.
 
 ```c
 void printOperatingModeandFunctionControl1(){
@@ -96,8 +96,8 @@ void printOperatingModeandFunctionControl1(){
 
 Ergebnis = 1 (= 00000001)
 
-Somit befinden wir uns laut Datenblatt im IDLE Ready Mode.
-Nun versuchen wir den Chip in den Standby Mode zusetzten indem wir in das
+Somit befinden wir uns laut Datenblatt im IDLE-Ready-Mode.
+Nun versuchen wir den Chip in den Standby-Mode zusetzen, indem wir in das
 07h Register 0h schreiben.
 
 ```c
@@ -106,7 +106,7 @@ void setIdleStandby(){
 }
 ```
 
-Nach erneutem auslesen des Registers steht nun der Wert 0h drinnen und der Chip befindet sich somit in IDLE Standby-Mode.
+Nach erneutem Auslesen des Registers steht nun der Wert 0h drinnen und der Chip befindet sich somit im IDLE-Standby-Mode.
 
 Somit wurde der Chip erfolgreich zum Booten gebracht.
 
@@ -121,7 +121,7 @@ void reset(){
   write(0x07, 0b10000000);
 }
 ```
-Ob der Reset Funktioniert hat kann mithilfe der vorherigen Funktionen getestet werden. Zuerst wird der Chip in den Standby Modus versetzt und danach wird ein Reset getriggert. Nun sollte der Wert des 07h Registers wieder 1 (= 00000001) sein und das ist er auch.
+Ob der Reset funktioniert hat, kann mithilfe der vorherigen Funktionen getestet werden. Zuerst wird der Chip in den Standby-Modus versetzt und danach wird ein Reset getriggert. Nun sollte der Wert des 07h Registers wieder 1 (= 00000001) sein und das ist er auch.
 
 Es würde auch noch expliziete Resets/Clears für den TX-FIFO und RX-FIFO im Register 08h "Operating Mode and Function Control 2" geben, jedoch werden diese momentan nicht benötigt.
 
@@ -129,55 +129,53 @@ Es würde auch noch expliziete Resets/Clears für den TX-FIFO und RX-FIFO im Reg
 
 # Frequenz
 
-Um die Frequen einstellen zu können benötigt man 3 Register:
+Um die Frequenz einstellen zu können, benötigt man 3 Register:
 * Frequency Band Select
 * Nominal Carrier Frequency 1
 * Nominal Carrier Frequency 0
 
-Die beiden unteren Register sind nur dafür da den Wert für die Nominal Carrier Frequency zu speichern, da der Wert 16 Bit groß ist Register nur 8 Bit speichern.
-Das erste Register ("Frequency Band Select") beinhaltet 3 Attribute.
-Die ersten 5 Bits [0..4] beinhalten den Wert für das Band, das Bit 5
-beschreiben ob es sich um ein "high band" handelt oder nicht und das Bit 6 gibt
-das siteband and 1 = "low-side injection" (bevorzugt) und 0 = "high-side injection"
+Die beiden unteren Register sind nur dafür da, den Wert für die Nominal Carrier Frequency zu speichern, da der Wert 16 Bit groß ist, aber das Register nur 8 Bit speichern kann. Das erste Register ("Frequency Band Select") beinhaltet 3 Attribute. Die ersten 5 Bits [0..4] beinhalten den Wert für das Band, das Bit 5
+beschreibt, ob es sich um ein "high band" handelt oder nicht und das Bit 6 gibt
+das siteband an. (1 = "low-side injection" (bevorzugt) und 0 = "high-side injection")
 
 Ein "high band" ist jede Frequenz die größer als 479.9 MHz ist.
-Also muss das bit 1 sein wenn die Frequenz größer als 479.9Mhz ist, ansonsten
+Also muss das Bit 1 sein, wenn die Frequenz größer als 479.9Mhz ist, ansonsten
 0.
 
-Es ist auch wichtig beim programmieren der Frequenzen die Grenzen zu beachten.
+Es ist auch wichtig beim Programmieren der Frequenzen die Grenzen zu beachten:
 * Min Freq (Band): 240 MHz
 * Max Freq (Band): 930 Mhz
 
-Was das bit für das Siteband macht wird im Datenblatt nicht beschrieben, aber laut diversen Github code sollte die immer 1 sein. 
+Was das Bit für das Siteband macht, wird im Datenblatt nicht beschrieben, aber laut diversem Github-Code sollte das Bit immer 1 sein. 
 
-Nun können wir uns mit einer kleinen Formel den fb Register Wert ausrechnen.
+Nun können wir uns mit einer kleinen Formel den fb-Register-Wert ausrechnen.
 
 ```
 double fb_f = (freq / (10.0 * (hbsel + 1))) - 24
 int fb = (int) fb
 ```
-Achtung: Bei fb_f muss es sich in dem Fall um eine Kommazahl handeln, da wir die Kommastellen noch brauchen für das fc Register.
+Achtung: Bei fb_f muss es sich in dem Fall um eine Kommazahl handeln, da wir die Kommastellen noch brauchen für das fc-Register.
 (Info: hbsel kann mit einem If-Statement ermittelt werden (< 480 Mhz))
 
-Nun haben wir die Werte für fb und hbsel und sbsel (= 1) und somit sind
-alle Werte für das "Frequency Band Select" Register vorhanden.
+Nun haben wir die Werte für fb und hbsel (high band select) und sbsel (side band select) (= 1) und somit sind
+alle Werte für das "Frequency-Band-Select" Register vorhanden.
 
 ```
 fbsr = (sbsel << 6) | (hbsel << 5) | fb
 ```
 
 Als nächstes müssen die Werte für den Nominal Carrier ermittelt werden.
-Diese Werte definieren welche genaue Frequenz dann in ausgewählten Band 
-verwendet wird. Um diese Wert zu bestimmen kann folgende Formel verwendet
-werden.
+Diese Werte definieren, welche genaue Frequenz dann im ausgewählten Band 
+verwendet wird. Um diesen Wert zu bestimmen, kann folgende Formel verwendet
+werden:
 
 ```
 fc = (int) ((fb_f - fb) * 64000);
 ```
 
 (fb_f - fb) liefert nur die Kommmazahlen.
-Dieser 16 Bit große Werte kann dann die die 2 Register geladen werden, 
-wobei im Register "Nominal Carrier Frequency 1" die 8 MSB stehen und in
+Dieser 16 Bit große Wert kann dann in die 2 Register geladen werden, 
+wobei im Register "Nominal Carrier Frequency 1" die 8 MSB stehen und im
 Register "Nominal Carrier Frequency 0" die 8 LSB.
 
 Somit wurden alle Register bestimmt.
@@ -228,9 +226,9 @@ void setFrequency(double freq){
 }
 ```
 
-Durch dieses Verfahren enstehen Rundungsfehler und diese sind unteranderem durch
-die Auflösung der Frequenz vom Chip gegeben. Um Schluss endlich zu überprüft 
-welche Frequenz gespeichert worden ist, oder um einfach auszulesen welche Frequenz gespeichert ist kann folgende Funktion verwendet werden.
+Durch dieses Verfahren entstehen Rundungsfehler und diese sind unter anderem durch
+die Auflösung der Frequenz vom Chip gegeben. Um schlussendlich zu überprüfen, 
+welche Frequenz gespeichert worden ist oder um einfach auszulesen welche Frequenz gespeichert ist, kann folgende Funktion verwendet werden:
 
 ```c
 void printFrequency(){
@@ -254,27 +252,26 @@ void printFrequency(){
 
 Die Formel für diese Berechnung ist auch im Datenblatt zu finden.
 
-INFO: Ich würde nicht empfehlen die Formel aus den Datenblatt zu verwenden für
-die berechnung des fc Wertes, da diese "falsche" Werte liefert, weiters bin ich
-mir nicht sicher ob das XLS Dokument von Silicon Labs geignet ist für die 
-überprüfung. Ich habe mir diverse SI4432 Projekte auf Github angesehen und 
-diese alle verwenden die oben angeführte Berechnungsmethode, welche in meinen 
+INFO: Ich würde nicht empfehlen die Formel aus dem Datenblatt zu verwenden, für
+die Berechnung des fc-Wertes, da diese "falsche" Werte liefert, weiters bin ich
+mir nicht sicher ob das XLS-Dokument von Silicon Labs für die Überprüfung geeignet ist. Ich habe mir diverse SI4432-Projekte auf Github angesehen und 
+diese verwenden alle die oben angeführte Berechnungsmethode, welche in meinen 
 Augen auch sehr sinnvoll erscheint.
-Sollte ich mich geirrt haben freue ich mich auf Feedback.
+Sollte ich mich geirrt haben freue ich mich über Feedback.
 
 <br>
 
 # Deviation (Shift)
 
 Der SI4432 unterstützt einen Shift / eine Deviation von +-1 bis +-320 kHz und kann in Schritten von 625 Hz eingestellt werden. (Auflösung = 625Hz per Inkrement).
-Bei Frequenz Modulation ändert sich dann die Frequenz um +- des Shifts.
+Bei Frequenz-Modulation ändert sich dann die Frequenz um +- des Shifts.
 
-Der Deviation / Shift Register Wert lässt sich wie folgt errechnen:
+Der Deviation/Shift-Register-Wert lässt sich wie folgt errechnen:
 ```
 fd = shift / 625 
 ```
 
-Der fd Wert kann dann ins Register 72h geschrieben werden.
+Der fd-Wert kann dann ins Register 72h geschrieben werden.
 
 ```c
 //deviation in khz  (50kHz = 50)
@@ -292,16 +289,16 @@ void setDeviation(double deviation){
 <br>
 
 Diese Berrechnung liefert teilweise einige merkwürde Zahlen. Jedoch stimmen
-sie mit dem XLS Dokument von Silicon-Labs überein.
+sie mit dem XLS-Dokument von Silicon-Labs überein.
 
 # Datenrate 
 
 Die Datenrate ist konfigurierbar zwischen 1 - 128 kbps / 0.123 - 256 kbps.
 (Je nach Datenblatt)
-Achtung wenn die Datenrate unter 30 kbps liegt muss "txdtrtscale" im Register
-70h auf 1 gesetzt werden andernfalls 0.
+Achtung ist geboten, wenn die Datenrate unter 30 kbps liegt, denn dann muss "txdtrtscale" im Register
+70h auf 1 gesetzt werden, andernfalls auf 0.
 
-Die Datenrate lässt sich wie folgt errechnen.
+Die Datenrate lässt sich wie folgt errechnen:
 ```
 if rate < 30
     scale = 2097152
@@ -311,11 +308,11 @@ else
 txdr = round(rate * scale / 1000.0)
 ```
 
-Achtung: Hier wird wieder eine andere Formel verwende als wie in Datenblatt
-angeführt, da die Formel im Datenblatt zu Ergebnissen führt die keinen Sinn machen. Die jetzt verwendete Formel stammt aus einem Github Projekt und stimmt
-auch mit den Werten der XLS Datei von Silicon Labs überein.
+Achtung: Hier wird wieder eine andere Formel verwendet, als im Datenblatt
+angeführt, da die Formel im Datenblatt zu Ergebnissen führt, die keinen Sinn machen. Die jetzt verwendete Formel stammt aus einem Github-Projekt und stimmt
+auch mit den Werten der XLS-Datei von Silicon Labs überein.
 
-Bei der Datenrate die wir erhalten handelt es sich um eine 16 Bit Zahl und diese wird wieder in 2 Registern abgespeichert.
+Bei der Datenrate die wir erhalten, handelt es sich um eine 16 Bit Zahl und diese wird wieder in 2 Registern abgespeichert:
 * TX Data Rate 1 (obere 8 Bit (MSB)) (6eh)
 * TX Data Rate 0 (untere 8 Bit (LSB)) (6fh)
 
@@ -351,10 +348,9 @@ void setDataRate(double datarate){
 }
 ```
 
-Info für Direct Mode:
+Info zum Direct-Mode:
 
-Wenn der Direct Mode verwendet (zb mit FSK), dann ist diese Einstellung relativ
-sinnlos, da die Datenrate über die Geschwindigkeit der übertragenden Daten 
+Wenn der Direct-Mode verwendet wird (zb mit FSK), dann ist diese Einstellung relativ sinnlos, da die Datenrate über die Geschwindigkeit der übertragenden Daten 
 festgelegt wird. Folglich sollten die Daten auch ununterbrochen übertragen
 werden, da es sonst zu verschiedenen Datenraten kommen kann (Wichtig bei zB.
 SPI)
@@ -371,7 +367,7 @@ Der SI4432 Chip untersützt grundsätzlich 4 verschiedene Modulationsarten:
 * FSK Frequency-Shift-Keying (0b10)
 * GFSK Gaussian-Frequency-Shift-Keying (0b11)
 
-Diese Wert kann im Register 71h "Modulation Mode Control 2" festgeschrieben werden.
+Dieser Wert kann im Register 71h "Modulation Mode Control 2" festgeschrieben werden.
 
 ```c
 #define UnmodulatedCarrier 0b00
@@ -397,13 +393,13 @@ void setModulationType(uint8_t typ){
 
 Der SI4432 unterstützt verschiedene Methoden um Sende-Daten an den Chip zu
 übertragen.
-* Direct Mode mit TX_Data via GPIO pin (0b00)
-* Direct Mode mit TX_Data via SDI pin (nur wenn nSEL HIGH ist) (0b01)
+* Direct Mode mit TX_Data via GPIO-Pin (0b00)
+* Direct Mode mit TX_Data via SDI-Pin (nur wenn nSEL HIGH ist) (0b01)
 * FIFO Mode (0b10)
 * PN9 (internally generated) (0b11)
 
-Achtung: für Direct Mode mit GPIO muss der Pin auch noch konfiguriert werden.
-Weiters muss auch definiert werden welche Clock verwendet wird. (See Direct Mode)
+Achtung: Für den Direct-Mode mit GPIO muss der Pin auch noch konfiguriert werden.
+Weiters muss auch definiert werden, welche Clock verwendet wird. (Siehe Direct Mode)
 
 Der Wert für die Modulationsdatenquelle muss ins Register 71h geschrieben werden. (dtmod)
 
@@ -430,16 +426,15 @@ void setModulationDataSource(uint8_t source){
 
 # Direct Mode
 
-Wenn der Direct Mode verwendet wird muss noch definiert über welchen Pin die
-Clock übertragen wird. Dies wird in dem Register "Modulation Mode Control 2"
-(71h) festgelegt und es gibt folgende Möglichkeiten.
+Wenn der Direct-Mode verwendet wird, muss noch definiert werden, über welchen Pin die Clock übertragen wird. Dies wird in dem Register "Modulation Mode Control 2"
+(71h) festgelegt und es gibt folgende Möglichkeiten:
 
 * No TX Data CLK (0b00)
 * TX Data CLK is available via the GPIO pin (0b01)
 * TX Data CLK is available via the SDO pin (0b10)
 * TX Data CLK is available via the nIRQ pin (0b11)
 
-Da wir eine FSK verwenden wollen braucht es keinen extra Clock Pin.
+Da wir eine FSK verwenden wollen, brauchen wir keinen extra Clock Pin.
 
 ```c
 #define NO_TX_DATA_CLK 0b00
@@ -461,11 +456,11 @@ void setDirectClockSource(uint8_t source){
 
 # Senden (direct mode)
 
-Achtung: Hierbei wird der SPI des ESP32 im DMA Modus verwendet.
+Achtung: Hierbei wird der SPI des ESP32 im DMA-Modus verwendet.
 
-Nun haben wir alle Funktionen um Signale zu senden. Jedoch benötigen wir noch Programme mit denen wir uns POCSAG Nachrichten erstellen können.
+Nun haben wir alle Funktionen um Signale zu senden. Jedoch benötigen wir noch Programme, mit denen wir uns POCSAG-Nachrichten erstellen können.
 
-Hierfür verwende ich ein kleines Python Programm:
+Hierfür verwende ich ein kleines Python-Programm:
 
 ```python
 from pocsag import encodeTXBatch
@@ -488,14 +483,14 @@ for x in bit32Data:
 print ("Lines: " + str(len(bit32Data)) + "   Transfered Bits: " + str(len(bit32Data) * 32))
 ```
 
-Wichtig ist es sich die Transfered Bits zu merken, da dies die Menge an Bits it die der SPI übertragen muss, da sonst nicht alle Daten übertragen wurden.
+Wichtig ist sich die Transfered Bits zu merken, da dies die Menge an Bits ist, die der SPI übertragen muss, da sonst nicht alle Daten übertragen wurden.
 
-Das Modul das in diesem Script verwendet wird wurde von cuddlycheetah erstellt. 
+Das Modul, das in diesem Script verwendet wird, wurde von cuddlycheetah erstellt. 
 Link zu der Github-Repo: <a href="https://github.com/cuddlycheetah/python-pocsag">Github</a>
 
-Das Script erstellt eine Ausgabe welche direkt in das ESP32 Projekt kopiert
+Das Script erstellt eine Ausgabe, welche direkt in das ESP32-Projekt kopiert
 werden kann. Jedoch benötigt sie die add32Bit() Funktion. Diese ist
-folgendermaßen aufgebaut.
+folgendermaßen aufgebaut:
 
 ```c
 uint8_t * add32Bit(uint8_t* tx, uint32_t data){
@@ -507,8 +502,8 @@ uint8_t * add32Bit(uint8_t* tx, uint32_t data){
 }
 ```
 
-Somit haben wir nun das Payload das wir übertragen woll und müssen nur noch 
-vorher den den Chip vorbereiten. (Frequenz setzen, Deviation usw.)
+Somit haben wir nun die Payload das wir übertragen wollen und müssen nur noch 
+vorher den Chip vorbereiten. (Frequenz setzen, Deviation usw.)
 
 
 ```c
@@ -530,11 +525,11 @@ vorher den den Chip vorbereiten. (Frequenz setzen, Deviation usw.)
     Serial.println("Enable TX MODE");
     setTXMode();
 ```
-Info: Funktionen wurden in den vorherigen Kapiteln aufgeführt. Weiters gibt es zum Schluss Links zu den Source-files.
+Info: Die Funktionen wurden in den vorherigen Kapiteln aufgeführt. Weiters gibt es zum Schluss Links zu den Source-files.
 
 Die Datenrate muss nicht gesetzt werden, da diese durch die Geschwindigkeit,
 des SPIs vorgegeben wird.
-Kurzgesagt: Wenn das SPI die Daten mit 512bps übertragen werden dann werden 
+Kurz gesagt: Wenn das SPI die Daten mit 512bps überträgt, dann werden 
 sie auch mit 512kps gesendet. 
 
 Diesen Modus nennt man auch Direct-Asynchronous-Mode. Diesem steht der 
@@ -542,7 +537,7 @@ Direct-Synchronous-Mode gegenüber, wo die Datenrate über eine eigene
 Clock-Leitung vorgegeben wird.
 
 
-Hier nochmal der komplette Sende-Vorgang  in einer Funktion:
+Hier nochmal der komplette Sende-Vorgang in einer Funktion:
 
 ```c
 void sendData(){
@@ -634,18 +629,18 @@ void sendData(){
 }
 ```
 
-Info: Die Transfergrößer des SPI ist auf 3000 gestellt was größer ist als die benötigten 1644. Dies ist nicht so ein großes Problem, nur kleiner sollte sie nicht sein.
+Info: Die Transfergröße des SPI ist auf 3000 gestellt, was größer ist als die benötigten 1644. Dies ist nicht so ein großes Problem, nur kleiner sollte sie nicht sein.
 
 <br>
 
 # Frequenz Offset
 
-Ein Problem beim Senden von Daten ist das die Sende-Frequenz nicht genau mit
+Ein Problem beim Senden von Daten ist, dass die Sende-Frequenz nicht genau mit
 der erwarteten Frequenz übereinstimmt. Dies ist wahrscheinlich auf die 
-Ungenaugikeit des Chips zurückzugühren, da ich bei verschiedenen Chips 
+Ungenaugikeit des Chips zurückzuführen, da ich bei verschiedenen Chips 
 verschiedene Frequenzen bei den gleichen Einstellungen erhalte.
 Um nun dies für Testzwecke kompensieren zu können kann ein statischer Offset 
-verwendet werden. Später sollte die durch den AFC (Automatic Frequency Control)
+verwendet werden. Später sollte dies durch die AFC (Automatic Frequency Control)
 passieren. Jedoch muss dafür RX funktionieren, da sich der Chip darüber
 synchronisiert.
 
@@ -675,26 +670,25 @@ void setOffset(double offset){
 
 <br>
 
-# Packet Handler ausschalten
+# Paket-Handler ausschalten
 
-Der Packet Handler kann im Register 30h "Data Access Controll" aktiviert und 
-deaktiviert werden. Für meinen Fall (POCSAG) muss ich den Packet-Handler 
-ausschalten, da die POCSAG Packete viel zu groß für den FIFO sind 
+Der Paket-Handler kann im Register 30h "Data Access Controll" aktiviert und 
+deaktiviert werden. In meinen Fall (POCSAG) muss ich den Paket-Handler 
+ausschalten, da die POCSAG-Pakete viel zu groß für den FIFO sind 
 (besonders wenn mehrere Frames ankommen) und die Synchronisation mit FSC 
-(frame sync code) funktioniert auch nicht (SI4432: pro Packet 1 FSC / POCSAG
-FSC nach jedem Frame (kein neus Packet)).
+(frame sync code) auch nicht funktioniert. (SI4432: pro Paket 1 FSC / POCSAG
+FSC nach jedem Frame (kein neus Packet))
 
 Laut Datenblatt wird das Register mit 10001101 initialisiert.
-Wobei das Bit 7 (enpacrx) angibt, ob der Packet-Handler für RX aktiviert werden
+Wobei das Bit 7 (enpacrx) angibt, ob der Paket-Handler für RX aktiviert werden
 soll oder nicht. 
 Das Bit 3 (enpactx) ist für TX.
 
-Laut Datenblatt müsste der Packethandler nicht deaktiviert werden, doch wird
-er auch nicht benötigt von dem her sehe ich keinen Grund ihn nicht zu 
-deaktivieren.
+Laut Datenblatt müsste der Pakethandler nicht deaktiviert werden, jedoch wird
+er nicht benötigt, weshalb nichts gegen das Deaktivieren spricht.
 
 Info: Dieses Register kann gänzlich mit 0 überschrieben werden, da die anderen
-Bits nur für die weitere Konfiguration des Packet-Handler da sind.
+Bits nur für die weitere Konfiguration des Paket-Handler da sind.
 
 ```c
 void disablePacketHandler(){
@@ -706,9 +700,9 @@ void disablePacketHandler(){
 
 # Preamble
 
-Für das einstellen der Preamble sind folgende Parameter von Bedeutung:
-* Preamble Länge (Register 34h)
-* Preamble Detection Threashold
+Für das Einstellen der Preamble sind folgende Parameter von Bedeutung:
+* Preamble-Länge (Register 34h)
+* Preamble Detection Threshold
 
 
 Die Länge wird im Register 34h und 33h festgelegt.
@@ -717,18 +711,18 @@ Für die Berechnung kann folgende Formel verwendet werden:
 prealen = preambleLänge / 4
 ```
 
-Wenn die Länge des Preamble >= 256 ist, dann muss das Bit im Register
-33h gesetzt werden (ist das MSB der Peramble Länge) (Länge der Peramble
+Wenn die Länge der Preamble >= 256 ist, dann muss das Bit im Register
+33h gesetzt werden (ist das MSB der Preamble-Länge) (Länge der Preamble
 wird in 9 Bits abgespeichert)
 
 
-Es nächstes wird der Peramble Detection Threashold festgelegt.
-Dieser besagt wie viele Bits von der Peramble gelesen werden müssen bevor sie
-als gültig erkannt wird. Ein guter Wert dafür ist laut Datenblatt 20Bits.
+Es nächstes wird der Preamble Detection Threashold festgelegt.
+Dieser besagt wie viele Bits von der Preamble gelesen werden müssen, bevor sie
+als gültig erkannt wird. Ein guter Wert dafür ist laut Datenblatt 20 Bits.
 
 Für die Berechnung kann folgende Formel verwendet werden:
 ```
-preath = theashold / 4
+preath = threshold / 4
 ```
 
 ```C
@@ -756,14 +750,14 @@ void setPreamble(uint16_t length, uint16_t threashold){
 }
 ```
 
-Nutzlich kann es sein das Invalid Preamble Register auszulesen, um zu erkennen
+Es kann nützlich sein das Invalid-Preamble-Register auszulesen, um zu erkennen,
 ob der Chip die Preamble erkannt hat. 
 Der Invalid-Peramble-Wert befindet sich im Register 04h "Interrupt/Status 2"
 Bit 6 und 5 wobei gilt:
 * Bit 6 = 1 -> Valid Preamble
 * Bit 5 = 1 -> Invalid Preamble
 
-Eine weitere Möglichkeit wäre einen GPIO Pin zu konfigurieren der den Status
+Eine weitere Möglichkeit wäre einen GPIO Pin zu konfigurieren, der den Status
 über HIGH und LOW Signale ausgibt.
 
 ```c
@@ -779,26 +773,26 @@ void printPreambleStatus(){
 
 <br>
 
-# SYNC Wort
+# SYNC-Wort
 
-Das Sync Wort kommt nach der Preamble und ist bei POCSAG 32Bit lang.
-Der SI4432 unterstützt 5 verschiedene Längen von SYNC Wörtern:
+Das Sync-Wort kommt nach der Preamble und ist bei POCSAG 32 Bit lang.
+Der SI4432 unterstützt 5 verschiedene Längen von SYNC-Wörtern:
 * 0 Byte (0b000)
 * 1 Byte (0b001)
 * 2 Byte (0b010)
 * 3 Byte (0b011)
 * 4 Byte (0b100)
 
-Das SYNC Wort selbst wird in bis zu 4 Registern gespeichert.
+Das SYNC-Wort selbst wird in bis zu 4 Registern gespeichert.
 
 * 1 Byte = SYNC Word 3 (Register 36h)
 * 2 Byte = SYNC Word 3, 2 (Register 36h, 37h)
 * 3 Byte = SYNC Word 3, 2, 1 (Register 36h, 37h, 38h)
 * 4 Byte = SYNC Word 3, 2, 1, 0 (Register 36h, 37, 38h, 39h)
 
-Das SYNC Wort wird in absteigender Reihenfolge ausgesendet.
+Das SYNC-Wort wird in absteigender Reihenfolge ausgesendet.
 
-Bsp: SYNC Wort zusammenstellung bei 4 Byte
+Bsp: SYNC-Wort-Zusammenstellung bei 4 Byte
 ```c
 uint32_t sync_word = (((word3 << 24) & (word2 << 16)) & (word1 << 8)) & word0 
 ```
@@ -847,24 +841,25 @@ void setSYNC_Word(uint8_t length, uint32_t sync_word){
 
 <br>
 
-# RX Modem
+# RX-Modem
 
-Das RX Modem ist für die Demodulation und die Channel Selektion zuständig.
+Das RX-Modem ist für die Demodulation und die Channel-Selektion zuständig.
 Weiters limitiert es die Bandbreite in der Signale empfangen werden. 
 
 Für die Berechnung der Parameter können einige Formeln und eine Tabelle 
 verwendet werden. Weiters wird die Datenrate und die Deviation / Shift für die
 Berechnung benötigt.
 
-Als erstes muss der Modulation Index (h) berechnet werden: 
+Als erstes muss der Modulation-Index (h) berechnet werden: 
 ```
 modindex = 2 * deviation / (datarate * (1 + manchester)))
 ```
-Info: machester ist 0 wenn Manchester-Encoding dekativiert ist, ansonsten 1
+Info: machester ist 0 wenn Manchester-Encoding deaktiviert ist, ansonsten 1
 
 Als nächstes wird die Bandbreite des Bandfilters berechnet. Für diese Berechnung
-gibt es zwei Formeln. je nach dem ob der ModulationsIndex größer oder kleiner 0
-ist.
+gibt es zwei Formeln, die verwendet werden können je nachdem, ob der Modulations-Index
+größer oder kleiner 0 ist.
+
 ```
 if modindex > 1
     bandwidth = (datarate / 2 * (1 + manchester) + 2 * deviation)
@@ -876,13 +871,13 @@ else
 Mit diesem Wert kann dann in einer Tabelle nachgesehen werden, was die 
 entsprechenden Werte für die Register ndec_exp, dwn3_bypass, fileset sind.
 
-Diese Werte können meines Wissen nicht berechnet werden sondern nur aus der 
+Diese Werte können meines Wissens nach nicht berechnet, sondern nur aus der 
 Tabelle ausgelesen werden.
 
-Achtung es gibt 2 Tabellen einmal für FSK, GFSK und eine für OOK.
+Achtung: Es gibt 2 Tabellen einmal für FSK, GFSK und eine für OOK.
 
-Nachdem die Werte aus der Tabelle ausgelesen wurden können nun die Werte 
-für das rxosr, ncoff und crgain Register berechnet werden.
+Nachdem die Werte aus der Tabelle ausgelesen wurden, können nun die Werte 
+für das rxosr-, ncoff- und crgain-Register berechnet werden.
 
 rxosr kann wie folgt berechnet werden:
 ```
@@ -894,8 +889,8 @@ ncoff:
 ncoff = (datarate * (1 + manchester) * 2^(20 + ndec_exp)) / (500 * (1 + 2 * dwm3_bypass))
 ```
 
-Die Formel die für den crgain in Datenblatt angegebn ist macht keinen 
-Sinn. Daher wird eine andere Formel verwendet die auch andere Projekte
+Die Formel, die für das crgain-Register im Datenblatt angegebn ist, macht keinen 
+Sinn. Daher wird eine andere Formel verwendet, die auch andere Projekte
 verwenden:
 ```
 crgain = 2 + (65535 * int(datarate)) / int(rxosr * deviation)
@@ -904,7 +899,7 @@ crgain = 2 + (65535 * int(datarate)) / int(rxosr * deviation)
 Die ganzen Werte müssen in einen ganzzahligen Wert umgewandelt werden, da sie
 sonst nicht in den Registern gespeichert werden können.
 
-Info: In dem Datenblatt gibt es auch vorgeferitigte Werte für die Register 
+Info: Im Datenblatt gibt es auch vorgefertigte Werte für die Register, 
 welche man nutzen kann, falls der benötigte Werte dort dabei ist. 
 Diese Werte sind in einer extra Tabelle organisiert. 
 
@@ -1143,12 +1138,12 @@ void setupModem(double datarate, double deviation, uint8_t manchester){
 }
 ```
 
-Info: das viel zu lange If-Else-Statement ist die digitalisierung der 
+Info: Das viel zu lange If-Else-Statement ist die Digitalisierung der 
 Tabelle. Ich habe leider keine Funktion gefunden, mit der ich die Werte aus 
 der Tabelle errechnen hätte können. Sollte jemand solch eine Funktion finden 
 würde ich mich darüber freuen.
 
-Es ist auch relativ praktisch überprüfen zu können ob die Werte in den Tabellen
+Es kann auch relativ praktisch sein, überprüfen zu können, ob die Werte in den Tabellen
 stimmen. Für dies kann folgende Funktion verwendet werden:
 ```c
 void printModem(){
@@ -1187,39 +1182,33 @@ ein bisschen zu streng ist. Dieses Problem wird aber später behandelt.
 
 # Empfangen (direct mode)
 
-Daten mit dem SI4432 empfangen kann ein bisschen trickreich sein, da es relativ
-schwer ist den Chip zu debuggen. Daher würde ich empfehlen folgende Dinge per
-Hand zu haben.
-
-* RTL-SDR (Software Definded Radio) (RX)
-* Funkgerät (zb. Baofeng)
-* Osziloskop / Logic Analyszer.
+Daten mit dem SI4432 zu empfangen kann ein bisschen trickreich sein, da es relativ
+schwer ist den Chip zu debuggen. Daher würde ich empfehlen folgende Dinge bei der
+Hand zu haben:Sachen
 
 Anstelle des Funkgerätes kann auch ein SDR mit Sendefähigkeit verwendet werden.
 Es ist natürlich auch möglich die folgenden Schritte ohne dieses Equipment
-durchzuführen, jedoch ist es dann schwerer Fehler schnell zu erkennen.
-Bzw den Chip sinvoll einzustellen.
+durchzuführen, jedoch ist es dann schwerer, Fehler schnell zu erkennen bzw.
+den Chip sinnvoll einzustellen.
 
 Zur Info:
-
 RX Chip ----senden----> TX Chip
 
-
-Normalesweise könnten wir das Offset-Register verändern, um den Sender auf 
+Normalerweise könnten wir das Offset-Register verändern, um den Sender auf 
 die richtige Frequenz zu tunen. Jedoch geht dies in diesem Fall nicht, da der
 AFC (Automatic Frequency Controll) das Register verändert und somit unseren
-Offset zu nichte macht. 
+Offset zunichtemacht. 
 
 Meiner Erfahrung nach geht es am leichtesten den Offset auf 0 zu belassen und 
-mit dem RX Chip einmal Daten auszusenden (siehe Senden (direct mode)).
-Mit dem SDR-RTL kann dann nachgesehen werden auf welcher Frequenz der Chip die 
-Daten genau aussendet. Denn meistens Senden die Chips nicht auf der 
-eingestellten Frequenz. (liegt vil an der Ungenauigkeit des Quarzes).
+mit dem RX-Chip einmal Daten auszusenden (siehe Senden (direct mode)).
+Mit dem SDR-RTL kann dann nachgesehen werden, auf welcher Frequenz der Chip die 
+Daten genau aussendet, denn meistens senden die Chips nicht auf der 
+eingestellten Frequenz. (liegt vielleicht an der Ungenauigkeit des Quarzes).
 
-Wenn nun die eigentliche Frequenz ermittelt wurde, dann kann beim TX Chip der
-Offset so eingestellt werden das dieser genau auf dieser Frequenz sendet. 
-Beim TX Chip können wir das Offset Register verändern das der AFC das Register
-nur im RX Modus verändert.
+Wenn nun die eigentliche Frequenz ermittelt wurde, kann beim TX-Chip der
+Offset so eingestellt werden, dass dieser genau auf dieser Frequenz sendet. 
+Beim TX-Chip können wir das Offset-Register verändern, sodass der AFC das Register
+nur im RX-Modus verändert.
 
 Offset einstellen:
 ```c
@@ -1235,12 +1224,12 @@ void setOffset(double offset){
   write(0x72, (fo >> 8) & 0b11);
 }
 ```
-Info: Offset sind nicht wirklich in khz (Formel passt wahrscheinlich nicht ganz, also einfach eher nach Gefühl einstellen)
+Info: Offsets sind nicht wirklich in khz (Formel passt wahrscheinlich nicht ganz, also einfach eher nach Gefühl einstellen)
 
-Mit dem RTL-SDR können wir dann wieder abgleichen ob der TX Chip nun auf der 
+Mit dem RTL-SDR können wir dann wieder abgleichen, ob der TX-Chip nun auf der 
 richtigen Frequenz sendet. 
 
-Bsp Code für den TX-Chip: Code:
+Bsp-Code für den TX-Chip: Code:
 ```
 void loop() {
   
@@ -1263,22 +1252,22 @@ void loop() {
   delay(100);
 }
 ```
-Offset ist bei jedem Chip anderes. (Gleiche Register-Werte bei 2 Chip = 2 
+Der Offset ist bei jedem Chip anders. (Gleiche Register-Werte bei 2 Chips = 2 
 verschiedene Frequenzen)
 
-Da nun die TX-Seite eingestellt ist und die Frequenzen angeglichen sind,
-kommen wir nun wieder zum RX Chip und kümmern uns um den Empfang.
+Da nun die TX-Seite eingestellt ist und die Frequenzen angeglichen wurden,
+kommen wir wieder zum RX-Chip und kümmern uns um den Empfang.
 
-Für den Empfang müssen folgende Sachen eingestellt werdne:
+Für den Empfang müssen folgende Parameter eingestellt werden:
 * Frequenz
 * Deviation
 * Datenrate
 * Modulationstyp
-* Packet Handel (disable)
+* Paket-Handler (disable)
 * Preamble
-* SYNC Wort
+* SYNC-Wort
 * RX-Modem
-* RX Mode
+* RX-Mode
 
 ```c
 void receive(){
@@ -1310,15 +1299,15 @@ void receive(){
 }
 ```
 
-Nun wurden alle alle benötigten Register eingestellt.
+Nun wurden alle benötigten Register eingestellt.
 
-Info: Wenn ein Chip RX und TX können soll dann reicht theoretisch auch eine
-Funnktion aus die die Dinge für RX und TX einstellt. (Einfach bei RX die 
-fehlenden Sachen von TX hinzufügen oder anderersrum).
+Info: Wenn ein Chip RX und TX können soll, dann reicht theoretisch auch eine
+Funktion aus, welche die Parameter für RX und TX einstellt. (Einfach bei RX die 
+fehlenden Sachen von TX hinzufügen oder andersherum).
 
-Um das Offset Problem kümmern wir uns später.
+Um das Offset-Problem kümmern wir uns später.
 
-Nun muss nur noch der Chip in den RX Modus versetzt werden. Dies geschied wenn 
+Nun muss nur noch der Chip in den RX-Modus versetzt werden. Dies geschied, wenn 
 im Register 07h "Operating Mode and Function Control 1" das Bit 2 rxon auf 1 gesetzt wird. 
 
 ```c
@@ -1328,14 +1317,14 @@ void setRXMode(){
 ```
 
 Wenn nun die Funktion receive() aufgerufen wird, werden alle Register richtig
-eingestellt und der Chip in den RX Modus versetzt.
+eingestellt und der Chip in den RX-Modus versetzt.
 
-Da wir den Chip aber auch im RX direkt Modus verwenden wollen, müssen wir noch
-die empfangenen Daten herausführen. Dies funktioniert am besten wenn wir die
-Daten auf einen eigenen GPIO Pin schreiben und zusätzlich noch eine Clock auf 
-einen anderen GPIO Pin, damit zur richtigen Zeit abgetastet wird. 
+Da wir den Chip aber auch im RX-direkt-Modus verwenden wollen, müssen wir noch
+die empfangenen Daten herausführen. Dies funktioniert am besten, wenn wir die
+Daten auf einen eigenen GPIO-Pin schreiben und zusätzlich noch eine Clock auf 
+einen anderen GPIO-Pin, damit zur richtigen Zeit abgetastet wird. 
 
-GPIOs konfigurieren geht relativ einfach. Man muss nur in das ensprechende
+GPIOs konfigurieren geht relativ einfach. Man muss nur in das entsprechende
 Register des GPIOs einen Wert schreiben.
 
 GPIO Register:
@@ -1343,9 +1332,9 @@ GPIO Register:
 * GPIO1 -> 0Ch
 * GPIO2 -> 0Dh
 
-Welche funktionen die GPIOs genau haben wird später erläutert. 
-Für das Empfangen ist nur wichtig das wir einen als RX-Data definieren 
-und den anderen als TX/RX Data clock und dies kann mit folgendem Befehlt 
+Welche Funktionen die GPIOs genau haben, wird später erläutert. 
+Für das Empfangen ist nur wichtig, dass wir einen davon als RX-Data definieren 
+und den anderen als TX/RX-Data-clock. Dies kann mit folgendem Befehl
 erledigt werden.
 ```c
 void enableRXOutputPins(){
@@ -1354,11 +1343,11 @@ void enableRXOutputPins(){
 }
 ```
 
-Das messen der Output Pins funktioniert am besten mit einem Oszilloskop,
-sollte kein Osziloskop vorhanden sein, kann man auch das Preamble-Register
-abfragen. Dies funktioniert relativ gut wenn man kein Osiloskop dabei hat.
-Jedoch wenn etwas nicht funktioniert macht es das nicht gerade einfacher.
-In dem Register steht weiters noch ob das SYNC Wort erkannt wurde, daher kann dies auch gleich mit ausgegeben werden.
+Das Messen der Output-Pins funktioniert am besten mit einem Oszilloskop,
+sollte kein Oszilloskop vorhanden sein, kann man auch das Preamble-Register
+abfragen. Dies funktioniert auch relativ gut, wenn man kein Osilloskop dabei hat.
+Jedoch ist das Finden von Fehlern dadurch mit mehr Aufwand verbunden.
+In dem Register steht weiters noch ob das SYNC-Wort erkannt wurde, daher kann dies auch gleich mit ausgegeben werden.
 
 Das Register (04h "Interrupt / Status 2") kann wie folgt abgefragt werden:
 ```c
@@ -1397,10 +1386,10 @@ void loop() {
 }
 ```
 
-Achtung! Es muss einmal ein Zeichen per UART gesendet werden, damit die RX 
-Register konfiguriert werden und der Chip in den RX Modus wechselt. 
+Achtung! Es muss einmal ein Zeichen per UART gesendet werden, damit die RX-Register
+konfiguriert werden und der Chip in den RX-Modus wechselt. 
 
-Wenn nun mit dem TX Chip Daten gesendet werden, sollten sie beim RX Data Pin 
+Wenn nun mit dem TX-Chip-Daten gesendet werden, sollten sie beim RX-Data-Pin 
 ausgegeben werden und zusätzlich sollte das Valid-Preamble-Bit kurz auf 1 sein
 und danach das SYNC-Word-Bit auch auf 1.
 Das Valid-Premable-Bit geht nach der Preamble wieder auf 0, wohingegen das
@@ -1409,56 +1398,56 @@ SYNC-Word-Bit auf 1 bleibt.
 Somit wurde ein erfolgreicher Transfer durchgeführt.
 Hurray.
 
-Hier noch ein paar kleine Debug Tipps:
-* Wenn sich der RX-Chip in Receive gefindet aber nicht nichts empfängt, ggf 
-mit eine Handfunkgerät in der nähe der Frequenz senden und schauen ob der dann 
-was empfängt. Geräte wie das Baofeng erzeugen relativ viele Oberwellen und 
-senden dann auch auf Frequenzen die nicht erwünscht sind, aber genau so könnte 
-man die eigentlich Frequenz des RX Chips finden.
-* Wenn man die Frequenz gefunden hat und HIGH und LOW am RX Ausgang sehen will,
-aber kein Oszi hat, dann kann hier ein Handfunkgerät mit abgeschrauberter 
-Antenne helfen. Diese Funkgerät sendet relativ gut nur auf einer Frequenz, da
-die Oberwellen zu wenig Leistung haben um sichtbar zu sein. Somit kann man dann
-auf der gewünschten HIGH Frequenz senden und ein konstantes Signal am RX Data 
-Ausgang messen. 
-* Es empfielt sich auch Antennen an die SI4432 Chips anzubringen, 
+Hier noch ein paar kleine Debug-Tipps:
+* Wenn sich der RX-Chip in Receive befindet, aber nichts empfängt, ggf. 
+mit einem Handfunkgerät in der Nähe der Frequenz senden und schauen, ob er dann 
+etwas empfängt. Geräte wie das Baofeng erzeugen relativ viele Oberwellen und 
+senden dann auch auf Frequenzen die nicht erwünscht sind. Jedoch kann dies auch dabei
+helfen, die eigentlich Frequenz des RX-Chips zu finden.
+* Wenn man die Frequenz gefunden hat und HIGH und LOW am RX-Ausgang sehen will,
+aber kein Oszi hat, dann kann hier ein Handfunkgerät mit abgeschraubter 
+Antenne helfen. Dieses Funkgerät sendet relativ gut, nur eben auf einer Frequenz, da
+die Oberwellen zu wenig Leistung haben, um sichtbar zu sein. Somit kann man dann
+auf der gewünschten HIGH-Frequenz senden und ein konstantes Signal am RX-Data-Ausgang
+messen. 
+* Es empfielt sich auch Antennen an die SI4432-Chips anzubringen, 
 da sonst die Signale möglicherweise zu schwach sind.
-* Ein konstantes Monotoring mit einem RTL-SDR und zb gqwrx ist auch sehr
+* Ein konstantes Monitoring mit einem RTL-SDR und zB. gqwrx ist auch sehr
 hilfreich.
 
 <br>
 
 # Quarz / Frequenz tuning
 
-Wie wir beim Senden bemerkt haben stimmt die Frequenz des Chips nicht wirklich 
-mit der ein die wir eingestellt haben. Ich vermute das dies am Quarz liegt.
+Wie wir beim Senden bemerkt haben, stimmt die Frequenz des Chips nicht wirklich 
+mit der überein, die wir eingestellt haben. Ich vermute, dass dies am Quarz liegt.
 Der Chip selbst bietet hierfür eine Lösung an und zwar kann man den Quarz ein 
-bissche "ziehen" (Frequenz verändern) um ihn auf die richtige Frequenz zu 
+bisschen "ziehen" (Frequenz verändern), um ihn auf die richtige Frequenz zu 
 tunen. 
 
-Die Werte für die Korrekte Frequenz kann mit einem RTL-SDR herausgefunden 
+Die Werte für die korrekte Frequenz kann mit einem RTL-SDR herausgefunden 
 werden. Jedoch muss davor der RTL-SDR kalibriert werden, da dieser sonst 
-die falschen Signale liefer (falscher Offset).
-Um den SDR zu kalibieren gibt es ein sehr nützlicher Projekt namens 
-kalibrate-rtl dies ist auf GitHub zu finden und verwendet GSM Stationen um 
-den Fehler des RTL-SDRs zu ermitteln. Dieser Fehler kann dann zb. gwrx 
-übergeben werden damit der offset angepasst wird.
+die falschen Signale liefert (falscher Offset).
+Um den SDR zu kalibieren, gibt es ein sehr nützliches Projekt namens 
+kalibrate-rtl. Dieses ist auf GitHub zu finden und verwendet GSM-Stationen, um 
+den Fehler des RTL-SDRs zu ermitteln. Dieser Fehler kann dann zB. gwrx 
+übergeben werden, damit der Offset angepasst wird.
 
-Link Github: <a href="https://github.com/steve-m/kalibrate-rtl"> klibrate-rtl</a>
+Link Github: <a href="https://github.com/steve-m/kalibrate-rtl"> kalibrate-rtl</a>
 
-Verwendundung kalibrate-rtl:
+Verwendung kalibrate-rtl:
 
-Zuerst muss nach den Basestation gesucht werden, es gibt verschiedene Arten von
+Zuerst muss nach den Basestations gesucht werden, es gibt verschiedene Arten von
 Basestations: GSM950, GSM900, EGSM, ... (-h für alle Optionen)
 ```
 ./kal -s GSM900
 ```
 
-Wenn dieser Befehl erfolgreich durchgelaufen ist sollte er hoffentlich 
+Wenn dieser Befehl erfolgreich durchgelaufen ist, sollte er hoffentlich 
 ein paar Stationen auflisten, wenn nicht dann am besten ein anderes 
 Band auswählen.
 
-Wenn es Basestation gefunden hat kann eine für die Kalibrirung verwendet werden
+Wenn Basestations gefunden wurden, kann eine für die Kalibrierung verwendet werden
 ```
 ./kal -c 15
 ```
@@ -1467,35 +1456,35 @@ Wenn es Basestation gefunden hat kann eine für die Kalibrirung verwendet werden
 Dann sollte zum Schluss der Fehler in ppm ausgegeben werden.
 
 
-So nun haben wir einen kalibrierten RTL-SDR und können nun das Register 
-09h "Crystal Oscillator Load Capacitance" verwenden um den Si4432 richtig zu 
+So nun haben wir einen kalibrierten RTL-SDR und können das Register 
+09h "Crystal Oscillator Load Capacitance" verwenden, um den Si4432 richtig zu 
 tunen. 
 
-Leider habe ich keine sinvolle Formel gefunden mit der dieser Shift berechnet 
+Leider habe ich keine sinnvolle Formel gefunden, mit der dieser Shift berechnet 
 werden kann.
-Somit ist das ein bisschen trial and error bis der Wert passt.
+Somit ist braucht es ein bisschen Trial and Error bis der Wert passt.
 ```c
 //load 0 - 0b01111111 (127)
 void setCrystalLoadCap(uint8_t load){
   write(0x09, (read(0x09) & 0b10000000) | (load & 0b01111111));
 }
 ```
-Je höher die Load desto kleiner wird ist die Frequenz.
+Je höher die Load desto kleiner wird die Frequenz.
 
-Sollte dies nicht genug sein um den Quarz auf die richtige Frequnz zu ziehen, 
-wäre es auch eine Idee einfach die Frequenz ein bisschen kleiner zu machen.
+Sollte dies nicht genug sein, um den Quarz auf die richtige Frequnz zu ziehen, 
+würde es sich auch anbieten, einfach die Frequenz ein bisschen kleiner zu machen.
 
-Info: Das Offset Register zu beschreiben ist keine gute Idee, da der AFC dies 
-im RX-Mode überschreibt und somit diesen Offset zu nichte macht.
+Info: Das Offset-Register zu beschreiben ist keine gute Idee, da der AFC dies 
+im RX-Mode überschreibt und somit diesen Offset zunichtemacht.
 
-Achtung! Es könnte sein das dies negative Auswirkungen auf das Verhalten des 
-Chips hat, jedoch ist mir bis jetzt noch nichts aufgefallen und in Datenblatt 
-wird auch nichts erwähnt bezüglich Probleme. 
+Achtung! Es könnte sein, dass dies negative Auswirkungen auf das Verhalten des 
+Chips hat, jedoch ist mir bis jetzt noch nichts aufgefallen und im Datenblatt 
+wird auch nichts erwähnt bezüglich dieser Probleme. 
 
-Ich bin mir zu diesem Zeitpunkt auch noch nicht sicher wie sich die Temperatur 
-auf das Verhalten des Oszillators auswirkt. Kann mir gut vorstellen das eine
+Ich bin mir zu diesem Zeitpunkt auch noch nicht sicher, wie sich die Temperatur 
+auf das Verhalten des Oszillators auswirkt. Ich kann mir gut vorstellen, dass eine
 Temperaturschwankung zu einer Frequenzschwankung führen kann. Diese könnte 
-theortische mithilfe des internen Temperatursensors ausgeglichen werden.
+theoretisch mit Hilfe des internen Temperatursensors ausgeglichen werden.
 
 <br>
 
