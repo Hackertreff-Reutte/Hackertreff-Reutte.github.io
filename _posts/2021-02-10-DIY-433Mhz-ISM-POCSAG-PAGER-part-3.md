@@ -36,6 +36,7 @@ für POCSAG. Eine ausführlichere Erläuterung ist weiter unten im Post zu finde
 * Quarz / Frequenz tuning
 * Sende-Leistung
 * AFC
+* GPIO
 
 <br>
 
@@ -1513,3 +1514,104 @@ void setPowerLevel(uint8_t level){
   write(0x6D, (read(0x6D) & 0b11111100) | level);
 }
 ```
+
+<br>
+
+# GPIO
+
+Der SI4432 vefügt über 3 GPIO pins die configuriert werden können.
+Dies geschieht über verschiedene Register (Jeder GPIO hat sein eigenes Register).
+
+* GPIO0 = Register 0Bh
+* GPIO1 = Register 0Ch
+* GPIO2 = Register 0Dh
+
+In diesen Registern kann in den ersten 5 Bits die Funktionalität des Pins 
+festgelegt werden.
+
+<br>
+
+Es gibt folgende Möglichkeiten:
+
+* 00000: Power-On-Reset (output)
+* 00001: Wake-Up Timer: 1 when WUT has expired (output)
+* 00010: Low Battery Detect: 1 when battery is below threshold * setting (output)
+* 00011: Direct Digital Input
+* 00100:External Interrupt, falling edge (input)
+* 00101: External Interrupt, rising edge (input)
+* 00110: External Interrupt, state change (input)
+* 00111: ADC Analog Input
+* 01000: Reserved (Analog Test N Input)
+* 01001: Reserved (Analog Test P Input)
+* 01010: Direct Digital Output
+* 01011: Reserved (Digital Test Output)
+* 01100: Reserved (Analog Test N Output)
+* 01101: Reserved (Analog Test P Output)
+* 01110: Reference Voltage (output)
+* 01111: TX/RX Data CLK output to be used in conjunction with TX/RX Data pin (output)
+* 10000: TX Data input for direct modulation (input)
+* 10001: External Retransmission Request (input)
+* 10010: TX State (output)
+* 10011: TX FIFO Almost Full (output)
+* 10100: RX Data (output)
+* 10101: RX State (output)
+* 10110: RX FIFO Almost Full (output)
+* 10111: Antenna 1 Switch used for antenna diversity (output)
+* 11000: Antenna 2 Switch used for antenna diversity (output)
+* 11001: Valid Preamble Detected (output)
+* 11010: Invalid Preamble Detected (output)
+* 11011: Sync Word Detected (output)
+* 11100: Clear Channel Assessment (output)
+* 11101: VDD
+* else: GND
+
+
+```c
+#define SI4432_GPIO0 0x0B
+#define SI4432_GPIO1 0x0C
+#define SI4432_GPIO2 0x0D
+
+void setGPIO(uint8_t gpio, uint8_t function){
+
+  if(gpio > 0x0D ||gpio < 0x0B){
+    Serial.println("Invalid GPIO pin");
+    return;
+  }
+
+  write(gpio, function & 0b11111);
+}
+```
+
+<br>
+
+# Zusammenfassung
+
+Des SI4432 ist ein recht netter transceiver, jedoch ist er
+sicherlich nicht der best für meine Anwendung. 
+
+Werde ich den Chip trotzdem verwenden?
+
+Ja da ich noch keinen besseren Chip gefunden habe.
+
+<br>
+
+Was ist mit dem SI4463?
+
+Diesen Chip würde ich sehr gerne verwenden, da dieser eine 
+verbesserung des SI4432 ist. Jedoch konnte ich nicht genügend 
+Informationen (Datenblätter) finden, damit ich sinnvoll Software 
+für den Chip entwickeln hätte können.
+
+Falls mir jemand ein ca. 160+ seitiges Datenblatt zukommen lässt,
+wo alles drinnen beschrieben wird wäre ich sehr dankbar.
+
+<br>
+
+Was passiert nun?
+
+Als nächstes wird mit diesem neuen Wissen eine Prototyp für 
+einen POCSAG Transceiver entwickelt.
+(Kommt dann als eigener Blogeintrag)
+
+
+~ HTR / Alex (UnHold)
