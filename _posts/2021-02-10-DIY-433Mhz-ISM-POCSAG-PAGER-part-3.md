@@ -1587,11 +1587,11 @@ void setGPIO(uint8_t gpio, uint8_t function){
 # Zusammenfassung
 
 Des SI4432 ist ein recht netter transceiver, jedoch ist er
-sicherlich nicht der best für meine Anwendung. 
+sicherlich nicht der beste für meine Anwendung. 
 
 Werde ich den Chip trotzdem verwenden?
 
-Ja da ich noch keinen besseren Chip gefunden habe.
+Ja, da ich noch keinen besseren Chip gefunden habe.
 
 <br>
 
@@ -1603,13 +1603,13 @@ Informationen (Datenblätter) finden, damit ich sinnvoll Software
 für den Chip entwickeln hätte können.
 
 Falls mir jemand ein ca. 160+ seitiges Datenblatt zukommen lässt,
-wo alles drinnen beschrieben wird wäre ich sehr dankbar.
+wo alles drinnen beschrieben wird, wäre ich sehr dankbar.
 
 <br>
 
 Was passiert nun?
 
-Als nächstes wird mit diesem neuen Wissen eine Prototyp für 
+Als nächstes wird mit diesem neuen Wissen ein Prototyp für 
 einen POCSAG Transceiver entwickelt.
 (Kommt dann als eigener Blogeintrag)
 
