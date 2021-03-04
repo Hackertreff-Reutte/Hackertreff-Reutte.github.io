@@ -1,0 +1,23 @@
+---
+layout: none
+permalink: /robots.txt
+permalink_name: robots.txt
+---
+
+User-agent: *
+Allow: /
+Allow: /blog.html
+Allow: /telegram.html
+Allow: /faq.html
+
+Sitemap: /sitemap.xml
+
+Disallow: /404.html
+Disallow: /403.html
+Disallow: /2020/
+Disallow: /2021/
+Disallow: /2022/
+Disallow: /2023/
+Disallow: /2024/
+Disallow: /2025/
+
