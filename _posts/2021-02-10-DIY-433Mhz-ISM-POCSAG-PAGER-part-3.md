@@ -1519,7 +1519,7 @@ void setPowerLevel(uint8_t level){
 
 # GPIO
 
-Der SI4432 vefügt über 3 GPIO pins die configuriert werden können.
+Der SI4432 vefügt über 3 GPIO-Pins, die konfiguriert werden können.
 Dies geschieht über verschiedene Register (Jeder GPIO hat sein eigenes Register).
 
 * GPIO0 = Register 0Bh
@@ -1537,7 +1537,7 @@ Es gibt folgende Möglichkeiten:
 * 00001: Wake-Up Timer: 1 when WUT has expired (output)
 * 00010: Low Battery Detect: 1 when battery is below threshold * setting (output)
 * 00011: Direct Digital Input
-* 00100:External Interrupt, falling edge (input)
+* 00100: External Interrupt, falling edge (input)
 * 00101: External Interrupt, rising edge (input)
 * 00110: External Interrupt, state change (input)
 * 00111: ADC Analog Input
@@ -1586,7 +1586,7 @@ void setGPIO(uint8_t gpio, uint8_t function){
 
 # Zusammenfassung
 
-Des SI4432 ist ein recht netter transceiver, jedoch ist er
+Des SI4432 ist ein recht netter Transceiver, jedoch ist er
 sicherlich nicht der beste für meine Anwendung. 
 
 Werde ich den Chip trotzdem verwenden?
@@ -1598,20 +1598,20 @@ Ja, da ich noch keinen besseren Chip gefunden habe.
 Was ist mit dem SI4463?
 
 Diesen Chip würde ich sehr gerne verwenden, da dieser eine 
-verbesserung des SI4432 ist. Jedoch konnte ich nicht genügend 
-Informationen (Datenblätter) finden, damit ich sinnvoll Software 
-für den Chip entwickeln hätte können.
+Verbesserung des SI4432 ist. Jedoch konnte ich nicht genügend 
+Informationen (Datenblätter) finden, um sinnvoll Software 
+für den Chip entwickeln zu können.
 
 Falls mir jemand ein ca. 160+ seitiges Datenblatt zukommen lässt,
-wo alles drinnen beschrieben wird, wäre ich sehr dankbar.
+in dem alles beschrieben wird, wäre ich sehr dankbar.
 
 <br>
 
 Was passiert nun?
 
 Als nächstes wird mit diesem neuen Wissen ein Prototyp für 
-einen POCSAG Transceiver entwickelt.
-(Kommt dann als eigener Blogeintrag)
+einen POCSAG-Transceiver entwickelt.
+(Hierzu wird es noch einen eigenen Blogeintrag geben)
 
 <br>
 
