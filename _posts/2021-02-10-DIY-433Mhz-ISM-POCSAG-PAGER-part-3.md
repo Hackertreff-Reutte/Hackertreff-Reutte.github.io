@@ -7,7 +7,7 @@ tags: AFU Arduino Funk Projekt Pager
 
 Nach langer Zeit geht es mit dem Projekt wieder ein bisschen weiter. 
 In diesem Post wird der SI4432 Chip genauer untersucht und versucht ihn als 
-ASK-Sender zu konfigurieren, um ihn dann schlussendlich als 
+FSK-Sender zu konfigurieren, um ihn dann schlussendlich als 
 Sende- und Empfangschip für den Pager verwenden zu können.
 
 # Vorweg: 
@@ -1613,5 +1613,11 @@ Als nächstes wird mit diesem neuen Wissen ein Prototyp für
 einen POCSAG Transceiver entwickelt.
 (Kommt dann als eigener Blogeintrag)
 
+<br>
+
+Hier noch der Link zu der Github Repo:
+<a href="https://github.com/Hackertreff-Reutte/Pager-Code-Chunks">Pager-Code-Chunks</a>
+
+<br>
 
 ~ HTR / Alex (UnHold)
