@@ -3,6 +3,7 @@ layout: post
 author: HTR
 post-title: "DIY 433MHz ISM POCSAG Pager #4"
 tags: AFU Arduino Funk Projekt Pager
+published: false
 ---
 
 Im letzten Blogpost wurde der SI4432 etwas genauer unter die Lupe genommen. Daher geht es nun in 
@@ -366,9 +367,6 @@ if(opt == 'C'){
 }
 ```
 
-
-//TODO REWORK
-
 Die Funktion kann verwendet werden, um die Frequenz des Quarzes feinabzustimmen. 
 Natürlich könnte dafür auch das Offset Register verwendet werden, da aber der Chip senden 
 und empfangen soll und das RX-Modem sich um dieses Register kümmert. Ist dies der einzige 
@@ -377,3 +375,8 @@ Weg die Frequenz einzustellen.
 Wird eigentlich nur benötigt wenn vorher noch nichts empfangen wurde und die Frequenz angepasst werden soll. (Ist ganz praktisch für Testzwecke, denn dann kann man sicher gehen, dass die Freuquenz stimmt 
 (Prüfung mit zB. SDR))
 
+__Nachtrag:__<br>
+Das Offset-Register wird von Chip im Empfangsmodus automatisch gesetzt. 
+Dies geschiet wenn ein Signal empfangen wird, dann stellt der Empfänger das
+Offset Register automatisch so ein, das der Empfänger genau auf das empfangene Signal abgestimmt ist. (Ermöglicht den Empfang von Signalen die 
+ein klein wenig von der einstellten Frequenz abweichen).
