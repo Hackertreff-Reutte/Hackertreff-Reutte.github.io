@@ -110,13 +110,30 @@ function createRadarGraph(data){
 
   console.log(dataLabels)
 
-  new Chart(document.getElementById("test"), {
+  new Chart(document.getElementById("vereine"), {
     type: 'radar',
     data: {
       labels: dataLabels,
       datasets: dataSets
     },
     options: {
+      scales: {
+        r: {
+            angleLines: {
+                display: true,
+                color: "#888"
+            },
+            grid: {
+              color: "#888"
+            },
+            ticks: {
+              display: false,
+              stepSize: 1
+            },
+            suggestedMin: 0,
+            suggestedMax: 3
+        }
+      }
     },
 });
 
