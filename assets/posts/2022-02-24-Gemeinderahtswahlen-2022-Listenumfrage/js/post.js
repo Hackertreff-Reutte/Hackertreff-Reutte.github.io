@@ -13,13 +13,18 @@ function createTable(frageNr, data) {
     table.appendChild(head);
 
     let line = document.createElement('tr');
-    
+
     for (let i = 0; i < data.length; i++) {
         let td = document.createElement('td');
         td.innerText = data[i][frageNr+2];
         line.appendChild(td);
     }
     table.appendChild(line);
+}
+
+
+function getChartColors(){
+    return ["#2ed573", "#2dd5c6", "#2c90d5" ,"#2b3bd5", "#702ad5", "#c529d5", "#d5288f", "#d52838" ,"#d56e28" ,"#d5c428", "#8fd528", "#38d528", "#8fd528", "#38d528"];
 }
 
 function createPieGraph(data, id, canvasName, description) {
@@ -38,7 +43,7 @@ function createPieGraph(data, id, canvasName, description) {
           labels: Object.keys(pieDataDic),
           datasets: [{
             label: description,
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"], //TODO change this
+            backgroundColor: getChartColors(),
             data: Object.values(pieDataDic),
           }]
         },
