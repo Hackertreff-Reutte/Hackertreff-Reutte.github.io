@@ -110,6 +110,7 @@ function createAllOptionalInformation(data) {
 //setup chart
 Chart.defaults.global.defaultFontColor = "#ffffff";
 Chart.defaults.global.defaultFontFamily = "Courier New, monospace";
+Chart.defaults.global.defaultFontSize = 16;
 
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
 	download: true,
