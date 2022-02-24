@@ -6,44 +6,79 @@ tags: Politik
 ---
 <link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
 
-<div id="div">
-</div>
+# Leistbares Wohnen für junge Erwachsene
 
 <table id="table_2"></table>
 <canvas id="leistbaresWohnenChart"> </canvas>
 <div id="leistbaresWohnenOptional"> </div>
+
+# Soll die Gemeinde als Vermieter auftreten?
+
 <table id="table_4"></table>
 <canvas id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
+
+# Wenn Wohnprojekte geplant sind, handelt es sich dann dabei um günstige oder teure Wohnungen?
+
 <table id="table_7"></table>
 <canvas id="teureGuensiteWohnungen"> </canvas>
 <div id="teureGuensiteWohnungenOptional"> </div>
+
+# Projekte zugunsten Jugendlicher
+
 <table id="table_9"></table>
 <canvas id="projekteJugendliche"> </canvas>
 <div id="projekteJugendlicheOptional"> </div>
+
+# Soll die Gemeinde Kinderbetreuung organisieren bzw. finanzieren?
+
 <table id="table_11"></table>
 <canvas id="gemeindeKinder"> </canvas>
 <div id="gemeindeKinderOptional"> </div>
+
+# Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wer soll darauf Anspruch haben?
+
 <table id="table_13"></table>
 <canvas id="kinderAnspruch"> </canvas>
+
+# Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wie werden die Kosten gestaltet?
+
 <table id="table_16"></table>
 <canvas id="kinderKosten"> </canvas>
 <div id="kinderKostenOptional"> </div>
+
+# Ausbau von öffentlichem Nahverkehr?
+
 <table id="table_18"></table>
 <canvas id="ausbauOeffi"> </canvas>
 <div id="ausbauOeffiOptional"> </div>
+
+# Anreize  schaffen für "umweltfreundliche Mobilität"?
+
 <table id="table_20"></table>
 <canvas id="anreizOeffi"> </canvas>
 <div id="anreizOeffiOptional"> </div>
+
+# Ist Transparenz wichtig?
+
 <table id="table_31"></table>
 <canvas id="transparenz"> </canvas>
 <div id="transparenzOptional"> </div>
+
+# Werden Protokolle, Beschlüsse und Daten prokativ veröffentlicht?
+
 <table id="table_33"></table>
 <canvas id="datenVeroeffentlichen"> </canvas>
 <div id="datenVeroeffentlichenOptional"> </div>
+
+# Ausbau Digitalisierung (digitales Gemeindeamt)?
+
 <table id="table_35"></table>
 <canvas id="digitalesGemeindeamt"> </canvas>
 <div id="digitalesGemeindeamtOptional"> </div>
+
+# Ausbau Internetinfrastruktur (Glasfaser, 5G)?
+
 <table id="table_37"></table>
 <canvas id="ausbauInternet5G"> </canvas>
 
