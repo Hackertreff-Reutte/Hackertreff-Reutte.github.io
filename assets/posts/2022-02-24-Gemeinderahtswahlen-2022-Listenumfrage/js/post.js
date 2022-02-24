@@ -45,13 +45,14 @@ function createPieGraph(data, id, canvasName, description) {
         options: {
           title: {
             display: true,
-            text: description
+            text: description,
           }
-        }
+        },
     });
 }
 
 function createGraph(data){
+    Chart.defaults.global.defaultFontColor = "#ffffff";
     createPieGraph(data, 2, "leistbaresWohnenChart", "Leistbares Wohnen für junge Erwachsene");
     createPieGraph(data, 4, "gemeindeVermieter", "Soll die Gemeinde als Vermieter auftreten?");
     createPieGraph(data, 7, "teureGuensiteWohnungen", "Wenn Wohnprojekte geplant sind, handelt es sich dann dabei um günstige oder teure Wohnungen?");
