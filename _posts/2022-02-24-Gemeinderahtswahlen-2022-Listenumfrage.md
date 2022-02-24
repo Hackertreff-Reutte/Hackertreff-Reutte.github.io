@@ -18,6 +18,10 @@ tags: Politik
 <canvas id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
 
+# Wenn Wohnprojekte geplant sind, gibt es zusätzliche Bauträger?
+
+<table id="table_6"></table>
+
 # Wenn Wohnprojekte geplant sind, handelt es sich dann dabei um günstige oder teure Wohnungen?
 
 <table id="table_7"></table>
@@ -41,6 +45,14 @@ tags: Politik
 <table id="table_13"></table>
 <canvas id="kinderAnspruch"> </canvas>
 
+# Wenn Kinderbetreuung von der Gemeinde aus geplant ist,  wie und für welche Altersgruppe soll diese ausgelegt werden? 
+
+<table id="table_14"></table>
+
+# Wenn Kinderbetreuung von der Gemeinde aus geplant ist, für welche Altersgruppen sollte sie während den Ferien verfügbar sein?
+
+<table id="table_15"></table>
+
 # Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wie werden die Kosten gestaltet?
 
 <table id="table_16"></table>
@@ -58,6 +70,8 @@ tags: Politik
 <table id="table_20"></table>
 <canvas id="anreizOeffi"> </canvas>
 <div id="anreizOeffiOptional"> </div>
+
+# Höhe der Vereinsförderung für?
 
 # Ist Transparenz wichtig?
 
