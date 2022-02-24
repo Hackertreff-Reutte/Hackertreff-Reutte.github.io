@@ -1,5 +1,6 @@
 table, th, td{
-  border: 1px solid white;
+  color: #ddd;
+  border: 1px solid #ddd;
   border-collapse: collapse;
   text-align: center;
 }
