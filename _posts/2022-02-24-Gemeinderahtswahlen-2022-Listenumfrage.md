@@ -6,12 +6,13 @@ tags: Politik
 ---
 <link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
 
-<table id="table_0">
-</table>
-<canvas id="chart"> </canvas>
+<div id="div">
+</div>
 
+<table id="table_2"></table>
 <canvas id="leistbaresWohnenChart"> </canvas>
 <div id="leistbaresWohnenOptional"> </div>
+<table id="table_4"></table>
 <canvas id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
 <canvas id="teureGuensiteWohnungen"> </canvas>

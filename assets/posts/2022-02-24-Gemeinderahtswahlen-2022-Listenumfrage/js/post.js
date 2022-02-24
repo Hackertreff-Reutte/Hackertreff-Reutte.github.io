@@ -24,11 +24,11 @@ function createTable(frageNr, data) {
 
 
 
-function getChartColors(){
+function getChartColors() {
 
-    const colors =  ["#5dd52e", "#2ed573" ,"#2e8fd5", "#522ed5", "#a62ed5", "#d52eb1", "#0d5412e" ,"#d56b2e" ,"#d5952e"];
+  const colors = ["#5dd52e", "#2ed573", "#2e8fd5", "#522ed5", "#a62ed5", "#d52eb1", "#0d5412e", "#d56b2e", "#d5952e"];
 
-    return colors;
+  return colors;
 }
 
 function createPieGraph(data, id, canvasName, description) {
@@ -53,7 +53,7 @@ function createPieGraph(data, id, canvasName, description) {
         },
         options: {
           title: {
-            display: true,
+            display: false,
             text: description,
           }
         },
@@ -108,9 +108,9 @@ function createAllOptionalInformation(data) {
 
 
 //setup chart
-Chart.defaults.global.defaultFontColor = "#ffffff";
+Chart.defaults.global.defaultFontColor = "#ddd";
 Chart.defaults.global.defaultFontFamily = "Courier New, monospace";
-Chart.defaults.global.defaultFontSize = 16;
+Chart.defaults.global.defaultFontSize = 15;
 
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
 	download: true,
