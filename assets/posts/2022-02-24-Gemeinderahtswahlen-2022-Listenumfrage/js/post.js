@@ -61,7 +61,6 @@ function createPieGraph(data, id, canvasName, description) {
 }
 
 function createGraph(data){
-    Chart.defaults.global.defaultFontColor = "#ffffff";
     createPieGraph(data, 2, "leistbaresWohnenChart", "Leistbares Wohnen für junge Erwachsene");
     createPieGraph(data, 4, "gemeindeVermieter", "Soll die Gemeinde als Vermieter auftreten?");
     createPieGraph(data, 7, "teureGuensiteWohnungen", "Wenn Wohnprojekte geplant sind, handelt es sich dann dabei um günstige oder teure Wohnungen?");
@@ -107,6 +106,10 @@ function createAllOptionalInformation(data) {
   createOptionalInformation(data, 36, "digitalesGemeindeamtOptional");
 }
 
+
+//setup chart
+Chart.defaults.global.defaultFontColor = "#ffffff";
+Chart.defaults.global.defaultFontFamily = "Courier New, monospace";
 
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
 	download: true,
