@@ -6,7 +6,9 @@ tags: Politik
 ---
 <canvas id="chart"> </canvas>
 
-<canvas id="leistbares_wohnen_chart"> </canvas>
+<canvas id="leistbaresWohnenChart"> </canvas>
+<canvas id="gemeindeVermieter"> </canvas>
+<canvas id="bautraegerWohnprojekte"> </canvas>
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

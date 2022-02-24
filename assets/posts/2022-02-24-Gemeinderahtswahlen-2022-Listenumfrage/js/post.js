@@ -9,7 +9,7 @@ function pieLeistbaresWohnen(data) {
     const pieDataDic = {};
     pieData.forEach(function (x) { pieDataDic[x] = (pieDataDic[x] || 0) + 1; });
 
-    new Chart(document.getElementById("leistbares_wohnen_chart"), {
+    new Chart(document.getElementById("leistbaresWohnenChart"), {
         type: 'pie',
         data: {
           labels: Object.keys(pieDataDic),
@@ -28,8 +28,70 @@ function pieLeistbaresWohnen(data) {
     });
 }
 
+
+function pieGemeindeVermieter(data) {
+
+    let pieData = [];
+    for(let i = 1; i < data["data"].length; i++){
+        pieData.push(data["data"][i][4]);
+    }
+
+    const pieDataDic = {};
+    pieData.forEach(function (x) { pieDataDic[x] = (pieDataDic[x] || 0) + 1; });
+
+    new Chart(document.getElementById("gemeindeVermieter"), {
+        type: 'pie',
+        data: {
+          labels: Object.keys(pieDataDic),
+          datasets: [{
+            label: "Soll die Gemeinde als Vermieter auftreten?",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"], //TODO change this
+            data: Object.values(pieDataDic),
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Soll die Gemeinde als Vermieter auftreten?'
+          }
+        }
+    });
+}
+
+
+function pieBautraegerWohnprojekte(data) {
+
+    let pieData = [];
+    for(let i = 1; i < data["data"].length; i++){
+        pieData.push(data["data"][i][6]);
+    }
+
+    const pieDataDic = {};
+    pieData.forEach(function (x) { pieDataDic[x] = (pieDataDic[x] || 0) + 1; });
+
+    new Chart(document.getElementById("bautraegerWohnprojekte"), {
+        type: 'pie',
+        data: {
+          labels: Object.keys(pieDataDic),
+          datasets: [{
+            label: "Wenn Wohnprojekte geplant sind, gibt es zusätzliche Bauträger?",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"], //TODO change this
+            data: Object.values(pieDataDic),
+          }]
+        },
+        options: {
+          title: {
+            display: true,
+            text: 'Wenn Wohnprojekte geplant sind, gibt es zusätzliche Bauträger?'
+          }
+        }
+    });
+}
+
 function createGraph(data){
     pieLeistbaresWohnen(data);
+    pieGemeindeVermieter(data);
+    pieBautraegerWohnprojekte(data);
     console.log(data);
 }
 
