@@ -1,3 +1,31 @@
+function createTable(frageNr, data) {
+    let table = document.getElementById("table_" + frageNr);
+    let head = document.createElement('tr');
+    
+    let th = document.createElement('th');
+    head.appendChild(th);
+
+    for (let i = 1; i < data.length; i++) {
+        let th = document.createElement('th');
+        th.innerText = data[i][1];
+        head.appendChild(th);
+    }
+    table.appendChild(head);
+
+    let line = document.createElement('tr');
+
+    for (let i = 0; i < data.length; i++) {
+        let td = document.createElement('td');
+        td.innerText = data[i][frageNr+2];
+        line.appendChild(td);
+    }
+    table.appendChild(line);
+}
+
+
+function getChartColors(){
+    return ["#2ed573", "#2dd5c6", "#2c90d5" ,"#2b3bd5", "#702ad5", "#c529d5", "#d5288f", "#d52838" ,"#d56e28" ,"#d5c428", "#8fd528", "#38d528", "#8fd528", "#38d528"];
+}
 
 function createPieGraph(data, id, canvasName, description) {
 
@@ -15,20 +43,21 @@ function createPieGraph(data, id, canvasName, description) {
           labels: Object.keys(pieDataDic),
           datasets: [{
             label: description,
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"], //TODO change this
+            backgroundColor: getChartColors(),
             data: Object.values(pieDataDic),
           }]
         },
         options: {
           title: {
             display: true,
-            text: description
+            text: description,
           }
-        }
+        },
     });
 }
 
 function createGraph(data){
+    Chart.defaults.global.defaultFontColor = "#ffffff";
     createPieGraph(data, 2, "leistbaresWohnenChart", "Leistbares Wohnen für junge Erwachsene");
     createPieGraph(data, 4, "gemeindeVermieter", "Soll die Gemeinde als Vermieter auftreten?");
     createPieGraph(data, 7, "teureGuensiteWohnungen", "Wenn Wohnprojekte geplant sind, handelt es sich dann dabei um günstige oder teure Wohnungen?");
@@ -78,6 +107,7 @@ function createAllOptionalInformation(data) {
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
 	download: true,
     complete: function(results) {
+        createTable(0, results.data);
 		createGraph(results);
     createAllOptionalInformation(results);
 	}
