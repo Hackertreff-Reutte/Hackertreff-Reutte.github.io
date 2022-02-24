@@ -148,10 +148,18 @@ function createOptionalInformation(data, id, divName) {
     let answer = data["data"][i][id];
     if (answer !== "") {
       let divElement = document.getElementById(divName);
-      var tag = document.createElement("p");
-      let text = document.createTextNode(data["data"][i][1] + ": " + answer);
-      tag.appendChild(text);
-      divElement.appendChild(tag);
+
+      var tag1 = document.createElement("span");
+      var tag2 = document.createElement("span");
+      let text1 = document.createTextNode(data["data"][i][1] + ": ");
+      let text2 = document.createTextNode(answer);
+      tag1.appendChild(text1);
+      tag2.appendChild(text2);
+      tag1.style.color = "#2ed573";
+      var par = document.createElement("p");
+      par.appendChild(tag1);
+      par.appendChild(tag2);
+      divElement.appendChild(par);
     }
   }
 }
