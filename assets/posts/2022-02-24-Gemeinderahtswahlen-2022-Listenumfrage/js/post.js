@@ -19,7 +19,7 @@ function createTable(frageNr, data, possibleAnswers) {
 
     for (let j = 0; j < possibleAnswers.length; j++) { // loop through answers
       let td = document.createElement('td');
-      td.innerText = data[i][frageNr] == possibleAnswers[j] ? "X" : "";
+      td.innerText = data[i][frageNr].includes(possibleAnswers[j]) ? "X" : "";
       line.appendChild(td);
     }
     table.appendChild(line);
@@ -204,7 +204,7 @@ let possibleAnswers = [
   [
     "Nein - Gemeinde ist alleiniger Bauträger",
     "Ja - zusätzliche Staatliche Bauträger",
-    "Ja - zusätzliche Private Bauträge",
+    "Ja - zusätzliche Private Bauträger",
   ],
   [
     "Keine Projekte geplannt",
@@ -247,7 +247,8 @@ let possibleAnswers = [
     "6-10 Nachmittagsbetreuung",
     "10-14 Nachmittagsbetreuung",
     "Keine",
-  ], [
+  ],
+  [
     "0-3",
     "0-3",
     "3-6",
@@ -257,10 +258,10 @@ let possibleAnswers = [
     "Keine",
   ], [
     "Die Betreuung ist kostenlos",
-    "Die Betreuung wird finanziell unterstützt > 50 %",
-    "Die Betreuung wird finanziell unterstützt < 50 %",
+    "Die Betreuung wird finanziell unterstützt > 50%",
+    "Die Betreuung wird finanziell unterstützt < 50%",
     "Die Betreuung wird nicht finanziell unterstützt",
-    "Dieses gilt es mit den Zuständigen abzuklären, eine Bedarfserhebung ist hier der essenzielle Grundstein",
+    "Dieses gilt es mit den Zuständigen abzuklären, eine Bedarfserhebung ist hier der essenzielle Grundstein.",
     "Geringe Kindergartenbeiträge",
   ],
   [
@@ -277,12 +278,12 @@ let possibleAnswers = [
     "Geplant",
     "Priorisierte Umsetzung",
   ],
-  [
+  /* [
     "Keine",
     "Geringe",
     "Durchschnittliche",
     "Spezielle Förderung",
-  ],
+  ], */
   [
     "Unwichtig",
     "Unschlüssig",
@@ -324,17 +325,20 @@ let possibleAnswers = [
 function createTables(data) {
   createTable(2, data, possibleAnswers[0]);
   createTable(4, data, possibleAnswers[1]);
-  createTable(7, data, possibleAnswers[2]);
-  createTable(9, data, possibleAnswers[3]);
-  createTable(11, data, possibleAnswers[4]);
-  createTable(13, data, possibleAnswers[5]);
-  createTable(16, data, possibleAnswers[6]);
-  createTable(18, data, possibleAnswers[7]);
-  createTable(20, data, possibleAnswers[8]);
-  createTable(31, data, possibleAnswers[9]);
-  createTable(33, data, possibleAnswers[10]);
-  createTable(35, data, possibleAnswers[11]);
-  createTable(37, data, possibleAnswers[12]);
+  createTable(6, data, possibleAnswers[2]);
+  createTable(7, data, possibleAnswers[3]);
+  createTable(9, data, possibleAnswers[4]);
+  createTable(11, data, possibleAnswers[5]);
+  createTable(13, data, possibleAnswers[6]);
+  createTable(14, data, possibleAnswers[7]);
+  createTable(15, data, possibleAnswers[8]);
+  createTable(16, data, possibleAnswers[9]);
+  createTable(18, data, possibleAnswers[10]);
+  createTable(20, data, possibleAnswers[11]);
+  createTable(31, data, possibleAnswers[12]);
+  createTable(33, data, possibleAnswers[13]);
+  createTable(35, data, possibleAnswers[14]);
+  createTable(37, data, possibleAnswers[15]);
 }
 
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
@@ -345,35 +349,3 @@ Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/
     createAllOptionalInformation(results);
 	}
 });
-/*
-
-const labels = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-];
-
-const data = {
-    labels: labels,
-    datasets: [{
-        label: 'My First dataset',
-        backgroundColor: 'rgb(255, 99, 132)',
-        borderColor: 'rgb(255, 99, 132)',
-        data: [0, 10, 5, 2, 20, 30, 45],
-    }]
-};
-
-const config = {
-    type: 'line',
-    data: data,
-    options: {}
-};
-
-const myChart = new Chart(
-    document.getElementById('chart'),
-    config
-  );
-  */
