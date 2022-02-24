@@ -1,28 +1,30 @@
-function createTable(frageNr, data) {
-    let table = document.getElementById("table_" + frageNr);
-    let head = document.createElement('tr');
-    
+function createTable(frageNr, data, possibleAnswers) {
+  let table = document.getElementById("table_" + frageNr);
+
+  let head = document.createElement('tr');
+  let th = document.createElement('th');
+  head.appendChild(th);
+  for (let i = 0; i < possibleAnswers.length; i++) {
     let th = document.createElement('th');
+    th.innerText = possibleAnswers[i];
     head.appendChild(th);
+  }
+  table.appendChild(head);
 
-    for (let i = 1; i < data.length; i++) {
-        let th = document.createElement('th');
-        th.innerText = data[i][1];
-        head.appendChild(th);
-    }
-    table.appendChild(head);
-
+  for (let i = 1; i < data.length; i++) {// loop through partys
     let line = document.createElement('tr');
+    let th = document.createElement('th');
+    th.innerText = data[i][1];
+    line.appendChild(th);
 
-    for (let i = 0; i < data.length; i++) {
-        let td = document.createElement('td');
-        td.innerText = data[i][frageNr+2];
-        line.appendChild(td);
+    for (let j = 0; j < possibleAnswers.length; j++) { // loop through answers
+      let td = document.createElement('td');
+      td.innerText = data[i][frageNr] == possibleAnswers[j] ? "X" : "";
+      line.appendChild(td);
     }
     table.appendChild(line);
+  }
 }
-
-
 
 function getChartColors() {
 
@@ -112,15 +114,38 @@ Chart.defaults.global.defaultFontColor = "#ddd";
 Chart.defaults.global.defaultFontFamily = "Courier New, monospace";
 Chart.defaults.global.defaultFontSize = 15;
 
+
+let possibleAnswers = [
+  [
+    "Gegen Umsetzung",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant",
+    "Priorisierte Umsetzung",
+
+  ],
+  [
+    "Nein auf keinem Fall",
+    "Nein",
+    "Unschlüssig",
+    "Ja",
+    "Ja sehr wichtig",
+  ],
+]
+
+function createTables(data) {
+  createTable(2, data, possibleAnswers[0]);
+  createTable(4, data, possibleAnswers[1]);
+}
+
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
 	download: true,
-    complete: function(results) {
-        createTable(0, results.data);
+  complete: function(results) {
+    createTables(results.data);
 		createGraph(results);
     createAllOptionalInformation(results);
 	}
-    }
-);
+});
 /*
 
 const labels = [
