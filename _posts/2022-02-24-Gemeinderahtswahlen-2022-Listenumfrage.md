@@ -4,6 +4,10 @@ author: HTR
 post-title: "Gemeinderahtswahlen 2022 Listenumfrage"
 tags: Politik
 ---
+<link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
+
+<table id="table_0">
+</table>
 <canvas id="chart"> </canvas>
 
 <canvas id="leistbaresWohnenChart"> </canvas>
