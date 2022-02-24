@@ -8,7 +8,18 @@ tags: Politik
 
 <canvas id="leistbaresWohnenChart"> </canvas>
 <canvas id="gemeindeVermieter"> </canvas>
-<canvas id="bautraegerWohnprojekte"> </canvas>
+<canvas id="teureGuensiteWohnungen"> </canvas>
+<canvas id="projekteJugendliche"> </canvas>
+<canvas id="gemeindeKinder"> </canvas>
+<canvas id="kinderAnspruch"> </canvas>
+<canvas id="kinderKosten"> </canvas>
+<canvas id="ausbauOeffi"> </canvas>
+<canvas id="anreizOeffi"> </canvas>
+<canvas id="transparenz"> </canvas>
+<canvas id="datenVeroeffentlichen"> </canvas>
+<canvas id="digitalesGemeindeamt"> </canvas>
+<canvas id="ausbauInternet5G"> </canvas>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

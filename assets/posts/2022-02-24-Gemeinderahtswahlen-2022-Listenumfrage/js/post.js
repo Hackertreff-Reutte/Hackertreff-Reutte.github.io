@@ -1,20 +1,20 @@
 
-function pieLeistbaresWohnen(data) {
+function createPieGraph(data, id, canvasName, description) {
 
     let pieData = [];
     for(let i = 1; i < data["data"].length; i++){
-        pieData.push(data["data"][i][2]);
+        pieData.push(data["data"][i][id]);
     }
 
     const pieDataDic = {};
     pieData.forEach(function (x) { pieDataDic[x] = (pieDataDic[x] || 0) + 1; });
 
-    new Chart(document.getElementById("leistbaresWohnenChart"), {
+    new Chart(document.getElementById(canvasName), {
         type: 'pie',
         data: {
           labels: Object.keys(pieDataDic),
           datasets: [{
-            label: "Leistbares Wohnen für junge Erwachsene",
+            label: description,
             backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"], //TODO change this
             data: Object.values(pieDataDic),
           }]
@@ -22,76 +22,28 @@ function pieLeistbaresWohnen(data) {
         options: {
           title: {
             display: true,
-            text: 'Leistbares Wohnen für junge Erwachsene'
-          }
-        }
-    });
-}
-
-
-function pieGemeindeVermieter(data) {
-
-    let pieData = [];
-    for(let i = 1; i < data["data"].length; i++){
-        pieData.push(data["data"][i][4]);
-    }
-
-    const pieDataDic = {};
-    pieData.forEach(function (x) { pieDataDic[x] = (pieDataDic[x] || 0) + 1; });
-
-    new Chart(document.getElementById("gemeindeVermieter"), {
-        type: 'pie',
-        data: {
-          labels: Object.keys(pieDataDic),
-          datasets: [{
-            label: "Soll die Gemeinde als Vermieter auftreten?",
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"], //TODO change this
-            data: Object.values(pieDataDic),
-          }]
-        },
-        options: {
-          title: {
-            display: true,
-            text: 'Soll die Gemeinde als Vermieter auftreten?'
-          }
-        }
-    });
-}
-
-
-function pieBautraegerWohnprojekte(data) {
-
-    let pieData = [];
-    for(let i = 1; i < data["data"].length; i++){
-        pieData.push(data["data"][i][6]);
-    }
-
-    const pieDataDic = {};
-    pieData.forEach(function (x) { pieDataDic[x] = (pieDataDic[x] || 0) + 1; });
-
-    new Chart(document.getElementById("bautraegerWohnprojekte"), {
-        type: 'pie',
-        data: {
-          labels: Object.keys(pieDataDic),
-          datasets: [{
-            label: "Wenn Wohnprojekte geplant sind, gibt es zusätzliche Bauträger?",
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"], //TODO change this
-            data: Object.values(pieDataDic),
-          }]
-        },
-        options: {
-          title: {
-            display: true,
-            text: 'Wenn Wohnprojekte geplant sind, gibt es zusätzliche Bauträger?'
+            text: description
           }
         }
     });
 }
 
 function createGraph(data){
-    pieLeistbaresWohnen(data);
-    pieGemeindeVermieter(data);
-    pieBautraegerWohnprojekte(data);
+    createPieGraph(data, 2, "leistbaresWohnenChart", "Leistbares Wohnen für junge Erwachsene");
+    createPieGraph(data, 4, "gemeindeVermieter", "Soll die Gemeinde als Vermieter auftreten?");
+    createPieGraph(data, 7, "teureGuensiteWohnungen", "Wenn Wohnprojekte geplant sind, handelt es sich dann dabei um günstige oder teure Wohnungen?");
+    createPieGraph(data, 9, "projekteJugendliche", "Projekte zugunsten Jugendlicher");
+    createPieGraph(data, 11, "gemeindeKinder", "Soll die Gemeinde Kinderbetreuung organisieren bzw. finanzieren?");
+    createPieGraph(data, 13, "kinderAnspruch", "Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wer soll darauf Anspruch haben?");
+    createPieGraph(data, 16, "kinderKosten", "Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wie werden die Kosten gestaltet?");
+    createPieGraph(data, 18, "ausbauOeffi", "Ausbau von öffentlichem Nahverkehr?");
+    createPieGraph(data, 20, "anreizOeffi", 'Anreize  schaffen für "umweltfreundliche Mobilität"?');
+    createPieGraph(data, 31, "transparenz", "Ist Transparenz wichtig?");
+    createPieGraph(data, 33, "datenVeroeffentlichen", "Werden Protokolle, Beschlüsse und Daten prokativ veröffentlicht?");
+    createPieGraph(data, 35, "digitalesGemeindeamt", "Ausbau Digitalisierung (digitales Gemeindeamt)?");
+    createPieGraph(data, 37, "ausbauInternet5G", "Ausbau Internetinfrastruktur (Glasfaser, 5G)?");
+
+
     console.log(data);
 }
 
