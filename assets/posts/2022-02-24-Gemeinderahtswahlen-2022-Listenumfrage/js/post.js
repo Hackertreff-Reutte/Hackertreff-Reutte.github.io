@@ -110,9 +110,9 @@ function createAllOptionalInformation(data) {
 
 
 //setup chart
-Chart.defaults.global.defaultFontColor = "#ddd";
-Chart.defaults.global.defaultFontFamily = "Courier New, monospace";
-Chart.defaults.global.defaultFontSize = 15;
+Chart.defaults.color = "#ddd";
+Chart.defaults.font.family = "Courier New, monospace";
+Chart.defaults.font.size = 15;
 
 
 let possibleAnswers = [
