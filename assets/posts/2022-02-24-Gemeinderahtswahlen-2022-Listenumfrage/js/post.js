@@ -30,6 +30,10 @@ function getChartColors() {
 
   const colors = ["#5dd52e", "#2ed573", "#2e8fd5", "#522ed5", "#a62ed5", "#d52eb1", "#0d5412e", "#d56b2e", "#d5952e"];
 
+  for(let i = 0; i < colors.length; i++){
+    colors[i] += "77";
+  }
+
   return colors;
 }
 
@@ -62,6 +66,62 @@ function createPieGraph(data, id, canvasName, description) {
     });
 }
 
+
+function createRadarGraph(data){
+
+  const dataLabels = []
+  for(let i = 22; i < 30; i++){
+    let temp = data["data"][0][i].substr(data["data"][0][i].indexOf('[') + 1);
+    dataLabels.push(temp.substr(0, temp.indexOf(']')));
+  }
+
+  const dataSets = [];
+
+  for(let j = 1; j < data["data"].length; j++){
+
+    const listData = [];
+
+    for(let i = 22; i < 30; i++){
+      let temp = data["data"][j][i];
+      switch(temp){
+      case "Keine":
+        listData.push(0);
+        break;
+      case "Geringe":
+        listData.push(1);
+        break;
+      case "Durchschnittliche":
+        listData.push(2);
+        break;
+      case "Spezielle Förderung":
+        listData.push(3);
+        break;
+      }
+    }
+
+    let set = {
+      label: data["data"][j][1],
+      backgroundColor: getChartColors()[j],
+      data: listData
+    };
+
+    dataSets.push(set);
+  }
+
+  console.log(dataLabels)
+
+  new Chart(document.getElementById("test"), {
+    type: 'radar',
+    data: {
+      labels: dataLabels,
+      datasets: dataSets
+    },
+    options: {
+    },
+});
+
+}
+
 function createGraph(data){
     createPieGraph(data, 2, "leistbaresWohnenChart", "Leistbares Wohnen für junge Erwachsene");
     createPieGraph(data, 4, "gemeindeVermieter", "Soll die Gemeinde als Vermieter auftreten?");
@@ -77,6 +137,8 @@ function createGraph(data){
     createPieGraph(data, 35, "digitalesGemeindeamt", "Ausbau Digitalisierung (digitales Gemeindeamt)?");
     createPieGraph(data, 37, "ausbauInternet5G", "Ausbau Internetinfrastruktur (Glasfaser, 5G)?");
 
+
+    createRadarGraph(data);
 
     console.log(data);
 }
