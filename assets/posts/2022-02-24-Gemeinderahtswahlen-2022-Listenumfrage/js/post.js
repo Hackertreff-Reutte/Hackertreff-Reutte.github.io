@@ -131,11 +131,140 @@ let possibleAnswers = [
     "Ja",
     "Ja sehr wichtig",
   ],
+  [
+    "Nein - Gemeinde ist alleiniger Bauträger",
+    "Ja - zusätzliche Staatliche Bauträger",
+    "Ja - zusätzliche Private Bauträge",
+  ],
+  [
+    "Keine Projekte geplannt",
+    "Eher teure Wohnungen (>70% der neu gebauten Wohnungen sind teurer)",
+    "Fast nur teure Wohnungen (> 85% der neu gebauten Wohnungen sind teurer)",
+    "Eher günstige Wohnungen (> 70% der neu gebauten Wohnungen sind günstiger)",
+    "Fast nur günstige Wohnungen (> 85% der neu gebauten Wohnungen sind günstiger)",
+    "Ausgeglichen (ca. 50% - 50% günstige und teure Wohnungen)",
+  ],
+  [
+    "Gegen Umsetzung",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant",
+    "Priorisierte Umsetzung",
+  ],
+  [
+    "Nein - vorhandenes soll reduziert",
+    "werden",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant",
+    "Ja - existierendes Angebot soll",
+    "ausgebaut werden",
+  ],
+  [
+    "Alle haben Anspruch auf die",
+    "Kinderbetreuung",
+    "Nur Bedürftige haben Anspruch auf die",
+    "Kinderbetreuung (z.B.: Alleinerziehende)",
+    "Nur Gemeinde Angestellte haben",
+    "Anspruch auf die Kinderbetreuung",
+    "Keine Meinung",
+  ],
+  [
+    "0-3 Ganztagsbetreuung",
+    "0-3 nur Vormittagsbetreuung",
+    "3-6 Ganztagsbetreuung",
+    "3-6 nur Vormittagsbetreuung",
+    "6-10 Nachmittagsbetreuung",
+    "10-14 Nachmittagsbetreuung",
+    "Keine",
+  ], [
+    "0-3",
+    "0-3",
+    "3-6",
+    "3-6",
+    "6-10",
+    "10-14",
+    "Keine",
+  ], [
+    "Die Betreuung ist kostenlos",
+    "Die Betreuung wird finanziell unterstützt > 50 %",
+    "Die Betreuung wird finanziell unterstützt < 50 %",
+    "Die Betreuung wird nicht finanziell unterstützt",
+    "Dieses gilt es mit den Zuständigen abzuklären, eine Bedarfserhebung ist hier der essenzielle Grundstein",
+    "Geringe Kindergartenbeiträge",
+  ],
+  [
+    "Gegen Umsetzung",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant",
+    "Priorisierte Umsetzung",
+  ],
+  [
+    "Gegen Umsetzung",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant",
+    "Priorisierte Umsetzung",
+  ],
+  [
+    "Keine",
+    "Geringe",
+    "Durchschnittliche",
+    "Spezielle Förderung",
+  ],
+  [
+    "Unwichtig",
+    "Unschlüssig",
+    "Wichtig",
+    "Sehr wichtig",
+  ],
+  [
+    "Nein",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant - aber nur auf Nachfrage",
+    "Geplant - proaktive auf z.B. Webseite",
+  ],
+  [
+    "Gegen Umsetzung",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant",
+    "Priorisierte Umsetzung",
+  ],
+  [
+    "Gegen Umsetzung",
+    "Nicht geplant",
+    "Unschlüssig",
+    "Geplant",
+    "Priorisierte Umsetzung",
+  ],
+  [
+    "Privatfinanzierung",
+    "Partei-Gelder",
+    "Spenden",
+    "Viel ehrenamtlicher",
+    "Arbeitseinsatz",
+  ]
+
+
 ]
 
 function createTables(data) {
   createTable(2, data, possibleAnswers[0]);
   createTable(4, data, possibleAnswers[1]);
+  createTable(7, data, possibleAnswers[2]);
+  createTable(9, data, possibleAnswers[3]);
+  createTable(11, data, possibleAnswers[4]);
+  createTable(13, data, possibleAnswers[5]);
+  createTable(16, data, possibleAnswers[6]);
+  createTable(18, data, possibleAnswers[7]);
+  createTable(20, data, possibleAnswers[8]);
+  createTable(31, data, possibleAnswers[9]);
+  createTable(33, data, possibleAnswers[10]);
+  createTable(35, data, possibleAnswers[11]);
+  createTable(37, data, possibleAnswers[12]);
 }
 
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {

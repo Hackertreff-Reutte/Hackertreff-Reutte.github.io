@@ -15,25 +15,36 @@ tags: Politik
 <table id="table_4"></table>
 <canvas id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
+<table id="table_7"></table>
 <canvas id="teureGuensiteWohnungen"> </canvas>
 <div id="teureGuensiteWohnungenOptional"> </div>
+<table id="table_9"></table>
 <canvas id="projekteJugendliche"> </canvas>
 <div id="projekteJugendlicheOptional"> </div>
+<table id="table_11"></table>
 <canvas id="gemeindeKinder"> </canvas>
 <div id="gemeindeKinderOptional"> </div>
+<table id="table_13"></table>
 <canvas id="kinderAnspruch"> </canvas>
+<table id="table_16"></table>
 <canvas id="kinderKosten"> </canvas>
 <div id="kinderKostenOptional"> </div>
+<table id="table_18"></table>
 <canvas id="ausbauOeffi"> </canvas>
 <div id="ausbauOeffiOptional"> </div>
+<table id="table_20"></table>
 <canvas id="anreizOeffi"> </canvas>
 <div id="anreizOeffiOptional"> </div>
+<table id="table_31"></table>
 <canvas id="transparenz"> </canvas>
 <div id="transparenzOptional"> </div>
+<table id="table_33"></table>
 <canvas id="datenVeroeffentlichen"> </canvas>
 <div id="datenVeroeffentlichenOptional"> </div>
+<table id="table_35"></table>
 <canvas id="digitalesGemeindeamt"> </canvas>
 <div id="digitalesGemeindeamtOptional"> </div>
+<table id="table_37"></table>
 <canvas id="ausbauInternet5G"> </canvas>
 
 
