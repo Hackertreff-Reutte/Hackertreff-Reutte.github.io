@@ -47,11 +47,39 @@ function createGraph(data){
     console.log(data);
 }
 
+function createOptionalInformation(data, id, divName) {
+  for(let i = 1; i < data["data"].length; i++){
+    let answer = data["data"][i][id];
+    if (answer !== "") {
+      let divElement = document.getElementById(divName);
+      var tag = document.createElement("p");
+      let text = document.createTextNode(data["data"][i][1] + ": " + answer);
+      tag.appendChild(text);
+      divElement.appendChild(tag);
+    }
+  }
+}
+
+function createAllOptionalInformation(data) {
+  createOptionalInformation(data, 3, "leistbaresWohnenOptional");
+  createOptionalInformation(data, 5, "gemeindeVermieterOptional");
+  createOptionalInformation(data, 8, "teureGuensiteWohnungenOptional");
+  createOptionalInformation(data, 10, "projekteJugendlicheOptional");
+  createOptionalInformation(data, 12, "gemeindeKinderOptional");
+  createOptionalInformation(data, 17, "kinderKostenOptional");
+  createOptionalInformation(data, 19, "ausbauOeffiOptional");
+  createOptionalInformation(data, 21, "anreizOeffiOptional");
+  createOptionalInformation(data, 32, "transparenzOptional");
+  createOptionalInformation(data, 34, "datenVeroeffentlichenOptional");
+  createOptionalInformation(data, 36, "digitalesGemeindeamtOptional");
+}
+
 
 Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
 	download: true,
     complete: function(results) {
 		createGraph(results);
+    createAllOptionalInformation(results);
 	}
     }
 );

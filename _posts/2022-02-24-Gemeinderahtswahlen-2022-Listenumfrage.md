@@ -7,17 +7,28 @@ tags: Politik
 <canvas id="chart"> </canvas>
 
 <canvas id="leistbaresWohnenChart"> </canvas>
+<div id="leistbaresWohnenOptional"> </div>
 <canvas id="gemeindeVermieter"> </canvas>
+<div id="gemeindeVermieterOptional"> </div>
 <canvas id="teureGuensiteWohnungen"> </canvas>
+<div id="teureGuensiteWohnungenOptional"> </div>
 <canvas id="projekteJugendliche"> </canvas>
+<div id="projekteJugendlicheOptional"> </div>
 <canvas id="gemeindeKinder"> </canvas>
+<div id="gemeindeKinderOptional"> </div>
 <canvas id="kinderAnspruch"> </canvas>
 <canvas id="kinderKosten"> </canvas>
+<div id="kinderKostenOptional"> </div>
 <canvas id="ausbauOeffi"> </canvas>
+<div id="ausbauOeffiOptional"> </div>
 <canvas id="anreizOeffi"> </canvas>
+<div id="anreizOeffiOptional"> </div>
 <canvas id="transparenz"> </canvas>
+<div id="transparenzOptional"> </div>
 <canvas id="datenVeroeffentlichen"> </canvas>
+<div id="datenVeroeffentlichenOptional"> </div>
 <canvas id="digitalesGemeindeamt"> </canvas>
+<div id="digitalesGemeindeamtOptional"> </div>
 <canvas id="ausbauInternet5G"> </canvas>
 
 
