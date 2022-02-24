@@ -23,8 +23,12 @@ function createTable(frageNr, data) {
 }
 
 
+
 function getChartColors(){
-    return ["#2ed573", "#2dd5c6", "#2c90d5" ,"#2b3bd5", "#702ad5", "#c529d5", "#d5288f", "#d52838" ,"#d56e28" ,"#d5c428", "#8fd528", "#38d528", "#8fd528", "#38d528"];
+
+    const colors =  ["#5dd52e", "#2ed573" ,"#2e8fd5", "#522ed5", "#a62ed5", "#d52eb1", "#0d5412e" ,"#d56b2e" ,"#d5952e"];
+
+    return colors;
 }
 
 function createPieGraph(data, id, canvasName, description) {
