@@ -82,6 +82,7 @@ tags: Politik
 
 # Höhe der Vereinsförderung für?
 
+<ul id="legend-container-radar"> </ul>
 <canvas id="vereine"> </canvas>
 
 
