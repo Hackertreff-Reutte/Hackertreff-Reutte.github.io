@@ -3,13 +3,21 @@
 # just copy+paste it and modify some of the content to begin with.
 
 title: Hackertreff-Reutte
+locale: de
 email: HackertreffReutte@protonmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  A paragraph describing your webpage.
+  Die webseite des Hackertreffs Reutte
 baseurl: "/" # the subpath of your site
 url: "https://hackertreff-reutte.com" # the base hostname & protocol for your site
 telegram_username: HackertreffReutte
 github_username:  Hackertreff-Reutte
+
+social:
+  name: Hackertreff-Reutte
+  links:
+    - https://github.com/Hackertreff-Reutte
+
+logo: assets/favicon.svg
 
 # Required plugins for the theme to work properly
 plugins:
@@ -36,12 +44,3 @@ font-size: small # options: [small] or [large]
 
 #excludes files / folders from being build
 exclude: [pull_build.sh, vendor/]
-
-
-#exclude all posts from the sitemap
-defaults:
-  -
-    scope:
-      path: '_posts/**'
-    values:
-      sitemap: true
