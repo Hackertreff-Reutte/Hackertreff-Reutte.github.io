@@ -260,8 +260,7 @@ let possibleAnswers = [
     "Priorisierte Umsetzung",
   ],
   [
-    "Nein - vorhandenes soll reduziert",
-    "werden",
+    "Nein - vorhandenes soll reduziert werden",
     "Nicht geplant",
     "Unschlüssig",
     "Geplant",
@@ -269,12 +268,9 @@ let possibleAnswers = [
     "ausgebaut werden",
   ],
   [
-    "Alle haben Anspruch auf die",
-    "Kinderbetreuung",
-    "Nur Bedürftige haben Anspruch auf die",
-    "Kinderbetreuung (z.B.: Alleinerziehende)",
-    "Nur Gemeinde Angestellte haben",
-    "Anspruch auf die Kinderbetreuung",
+    "Alle haben Anspruch auf die Kinderbetreuung",
+    "Nur Bedürftige haben Anspruch auf die Kinderbetreuung (z.B.: Alleinerziehende)",
+    "Nur Gemeinde Angestellte haben Anspruch auf die Kinderbetreuung",
     "Keine Meinung",
   ],
   [
