@@ -202,7 +202,6 @@ function createGraph(data){
 
     createRadarGraph(data);
     createTimestampTable(data);
-    console.log(data);
 }
 
 function createOptionalInformation(data, id, divName) {
