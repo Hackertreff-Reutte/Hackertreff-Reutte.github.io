@@ -11,7 +11,9 @@ tags: Politik
 # Metadaten
 
 Listen gesamt: 68 (ohne Wängle)
-Listen mit Internetauftritt: 22
+Listen mit Internetauftritt: 25
+Listen mit Facebook-Seite: 22
+Listen mit eigener Webseite: 11.5
 Listen per Mail kontaktiert: 18
 Listen die geantwortet haben: 5
 Listen die die Umfrage ausgefüllt haben: 4
