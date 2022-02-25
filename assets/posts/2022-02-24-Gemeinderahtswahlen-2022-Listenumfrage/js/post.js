@@ -58,6 +58,7 @@ function createPieGraph(data, id, canvasName, description) {
           }]
         },
         options: {
+          responsive: false,
           title: {
             display: false,
             text: description,

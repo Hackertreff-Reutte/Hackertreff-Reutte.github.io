@@ -10,14 +10,14 @@ tags: Politik
 
 <table id="table_2"></table>
 <ul id="legend-container-2"> </ul>
-<canvas id="leistbaresWohnenChart"> </canvas>
+<canvas class="pie" id="leistbaresWohnenChart"> </canvas>
 <div id="leistbaresWohnenOptional"> </div>
 
 # Soll die Gemeinde als Vermieter auftreten?
 
 <table id="table_4"></table>
 <ul id="legend-container-4"> </ul>
-<canvas id="gemeindeVermieter"> </canvas>
+<canvas class="pie" id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
 
 # Wenn Wohnprojekte geplant sind, gibt es zusätzliche Bauträger?
@@ -28,28 +28,28 @@ tags: Politik
 
 <table id="table_7"></table>
 <ul id="legend-container-7"> </ul>
-<canvas id="teureGuensiteWohnungen"> </canvas>
+<canvas class="pie" id="teureGuensiteWohnungen"> </canvas>
 <div id="teureGuensiteWohnungenOptional"> </div>
 
 # Projekte zugunsten Jugendlicher
 
 <table id="table_9"></table>
 <ul id="legend-container-9"> </ul>
-<canvas id="projekteJugendliche"> </canvas>
+<canvas class="pie" id="projekteJugendliche"> </canvas>
 <div id="projekteJugendlicheOptional"> </div>
 
 # Soll die Gemeinde Kinderbetreuung organisieren bzw. finanzieren?
 
 <table id="table_11"></table>
 <ul id="legend-container-11"> </ul>
-<canvas id="gemeindeKinder"> </canvas>
+<canvas class="pie" id="gemeindeKinder"> </canvas>
 <div id="gemeindeKinderOptional"> </div>
 
 # Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wer soll darauf Anspruch haben?
 
 <table id="table_13"></table>
 <ul id="legend-container-13"> </ul>
-<canvas id="kinderAnspruch"> </canvas>
+<canvas class="pie" id="kinderAnspruch"> </canvas>
 
 # Wenn Kinderbetreuung von der Gemeinde aus geplant ist,  wie und für welche Altersgruppe soll diese ausgelegt werden? 
 
@@ -63,21 +63,21 @@ tags: Politik
 
 <table id="table_16"></table>
 <ul id="legend-container-16"> </ul>
-<canvas id="kinderKosten"> </canvas>
+<canvas class="pie" id="kinderKosten"> </canvas>
 <div id="kinderKostenOptional"> </div>
 
 # Ausbau von öffentlichem Nahverkehr?
 
 <table id="table_18"></table>
 <ul id="legend-container-18"> </ul>
-<canvas id="ausbauOeffi"> </canvas>
+<canvas class="pie" id="ausbauOeffi"> </canvas>
 <div id="ausbauOeffiOptional"> </div>
 
 # Anreize  schaffen für "umweltfreundliche Mobilität"?
 
 <table id="table_20"></table>
 <ul id="legend-container-20"> </ul>
-<canvas id="anreizOeffi"> </canvas>
+<canvas class="pie" id="anreizOeffi"> </canvas>
 <div id="anreizOeffiOptional"> </div>
 
 # Höhe der Vereinsförderung für?
@@ -89,28 +89,28 @@ tags: Politik
 
 <table id="table_31"></table>
 <ul id="legend-container-31"> </ul>
-<canvas id="transparenz"> </canvas>
+<canvas class="pie" id="transparenz"> </canvas>
 <div id="transparenzOptional"> </div>
 
 # Werden Protokolle, Beschlüsse und Daten prokativ veröffentlicht?
 
 <table id="table_33"></table>
 <ul id="legend-container-33"> </ul>
-<canvas id="datenVeroeffentlichen"> </canvas>
+<canvas class="pie" id="datenVeroeffentlichen"> </canvas>
 <div id="datenVeroeffentlichenOptional"> </div>
 
 # Ausbau Digitalisierung (digitales Gemeindeamt)?
 
 <table id="table_35"></table>
 <ul id="legend-container-35"> </ul>
-<canvas id="digitalesGemeindeamt"> </canvas>
+<canvas class="pie" id="digitalesGemeindeamt"> </canvas>
 <div id="digitalesGemeindeamtOptional"> </div>
 
 # Ausbau Internetinfrastruktur (Glasfaser, 5G)?
 
 <table id="table_37"></table>
 <ul id="legend-container-37"> </ul>
-<canvas id="ausbauInternet5G"> </canvas>
+<canvas class="pie" id="ausbauInternet5G"> </canvas>
 
 
 
