@@ -274,12 +274,12 @@ let possibleAnswers = [
     "Keine Meinung",
   ],
   [
-    "0-3 Ganztagsbetreuung",
-    "0-3 nur Vormittagsbetreuung",
-    "3-6 Ganztagsbetreuung",
-    "3-6 nur Vormittagsbetreuung",
-    "6-10 Nachmittagsbetreuung",
-    "10-14 Nachmittagsbetreuung",
+    "0-3 Ganztags-betreuung",
+    "0-3 nur Vormittags-betreuung",
+    "3-6 Ganztags-betreuung",
+    "3-6 nur Vormittags-betreuung",
+    "6-10 Nachmittags-betreuung",
+    "10-14 Nachmittags-betreuung",
     "Keine",
   ],
   [
