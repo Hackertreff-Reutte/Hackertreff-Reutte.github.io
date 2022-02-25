@@ -144,8 +144,18 @@ function createRadarGraph(data){
             suggestedMin: 0,
             suggestedMax: 3
         }
-      }
+      },
+      plugins: {
+        htmlLegend: {
+          // ID of the container to put the legend in
+          containerID: "legend-container-radar",
+        },
+        legend: {
+          display: false,
+        }
+      },
     },
+    plugins: [htmlLegendPlugin],
 });
 
 }
