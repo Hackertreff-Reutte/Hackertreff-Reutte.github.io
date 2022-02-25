@@ -4,10 +4,11 @@ author: HTR
 post-title: "Gemeinderatswahlen 2022 Listenumfrage"
 tags: Politik
 ---
-<link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
 
 Wir haben uns ein paar Tage vor den Gemeinderatswahlen gefragt, welche Prinzipien die Listen im Bezirk Reutte vertreten und wie gut deren Internetauftritt gestaltet ist. Nach mehren Stunden Research und mehreren Mails haben wir nun die Ergebnisse und möchten diese hier präsentieren.
 Dieser Post soll noch unentschlossenen Bürgerinnen und Bürgern im Entscheidungsprozess helfen.
+
+<link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
 
 <br>
 
