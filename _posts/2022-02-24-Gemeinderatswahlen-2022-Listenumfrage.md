@@ -6,20 +6,19 @@ tags: Politik
 ---
 <link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
 
-Wir haben uns ein paar Tage vor der Gemeinderats gefragt, welche Prinzipien die Listen im Bezirk Reutte vertreten und wie gut deren Internetauftritt gestaltet ist. Nach mehren Stunden Research und mehreren Mails haben wir nun die Ergebnisse und möchten diese hier präsentieren.
+Wir haben uns ein paar Tage vor der Gemeinderatswahl gefragt, welche Prinzipien die Listen im Bezirk Reutte vertreten und wie gut deren Internetauftritt gestaltet ist. Nach mehren Stunden Research und mehreren Mails haben wir nun die Ergebnisse und möchten diese hier präsentieren.
 Dieser Post soll noch unentschlossenen Bürgerinnen und Bürgern im Entscheidungsprozess helfen.
 
 <br>
 
 # Vorgehensweise
 
-Die Namen der Listen haben wir von der Webseite:
-<a href="https://wahlen.tirol.gv.at/gemeinderats_und_buergermeisterwahlen_2022/bezirke/reutte.html" download>https://wahlen.tirol.gv.at/gemeinderats_und_buergermeisterwahlen_2022/bezirke/reutte.html</a>
-erhalten. Mit diesen erhaltenen Listen-Namen haben wir dann versucht über eine der größten Suchmaschinen alles Mögliche über die Liste herauszufinden (Facebook-Seiten, E-Mail Adressen, Webseiten, usw.).
+Die Namen der Listen haben wir von der Webseite des Landes Tirol. (<a href="https://wahlen.tirol.gv.at/gemeinderats_und_buergermeisterwahlen_2022/bezirke/reutte.html" download>https://wahlen.tirol.gv.at/gemeinderats_und_buergermeisterwahlen_2022/bezirke/reutte.html</a>)
+Mit diesen erhaltenen Listen-Namen haben wir dann versucht über eine der größten Suchmaschinen alles Mögliche über die Liste herauszufinden (Facebook-Seiten, E-Mail Adressen, Webseiten, usw.).
 
 Die erhaltenen Daten wurden dann in einem Tabellen-Programm zusammengefasst. (Dieses Dokument wird im CSV-Format am Ende des Blogs als Download angeboten).
 
-Zusätzlich haben wir in der Gruppe eine Umfrage erstellt, mit Fragen, die uns als junge Bürgerinnen und Bürger als wichtig erscheinen. Diese Umfrage haben wir dann an alle Listen versendet (per Mail), von denen wir eine Mail-Adresse hatten.
+Zusätzlich haben wir eine Umfrage erstellt, mit Fragen, die uns als junge Bürgerinnen und Bürger als wichtig erscheinen. Diese Umfrage haben wir dann an alle Listen versendet (per Mail), von denen wir eine Mail-Adresse hatten.
 
 Die erhaltenen Ergebnisse werden in folgenden Abschnitten präsentiert.
 (Auch diese Daten werden am Ende als CSV-Datei zum Download angeboten.)
