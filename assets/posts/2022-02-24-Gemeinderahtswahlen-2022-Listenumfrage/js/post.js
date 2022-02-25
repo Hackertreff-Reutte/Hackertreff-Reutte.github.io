@@ -19,7 +19,7 @@ function createTable(frageNr, data, possibleAnswers) {
 
     for (let j = 0; j < possibleAnswers.length; j++) { // loop through answers
       let td = document.createElement('td');
-      td.innerText = data[i][frageNr].includes(possibleAnswers[j]) ? "X" : "";
+      td.innerText = data[i][frageNr].split("-").join("").includes(possibleAnswers[j].split("-").join("")) ? "X" : "";
       line.appendChild(td);
     }
     table.appendChild(line);
@@ -264,8 +264,7 @@ let possibleAnswers = [
     "Nicht geplant",
     "Unschlüssig",
     "Geplant",
-    "Ja - existierendes Angebot soll",
-    "ausgebaut werden",
+    "Ja - existierendes Angebot soll ausgebaut werden",
   ],
   [
     "Alle haben Anspruch auf die Kinderbetreuung",
@@ -342,7 +341,7 @@ let possibleAnswers = [
     "Gegen Umsetzung",
     "Nicht geplant",
     "Unschlüssig",
-    "Geplant",
+    "Geplant", 
     "Priorisierte Umsetzung",
   ],
   [
