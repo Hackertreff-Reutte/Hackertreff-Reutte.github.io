@@ -19,6 +19,6 @@ h1 {
     margin-right: auto;
 }
 
-li:before {
+.legend-items:before {
   content: "" !important;
 }

@@ -446,6 +446,7 @@ const htmlLegendPlugin = {
       li.style.display = 'flex';
       li.style.flexDirection = 'row';
       li.style.marginLeft = '10px';
+      li.classList.add('legend-items');
 
       li.onclick = () => {
         const {type} = chart.config;
