@@ -5,7 +5,7 @@ post-title: "Gemeinderatswahlen 2022 Listenumfrage"
 tags: Politik
 ---
 
-Wir haben uns ein paar Tage vor den Gemeinderatswahlen gefragt, welche Prinzipien die Listen im Bezirk Reutte vertreten und wie gut deren Internetauftritt gestaltet ist. Nach mehren Stunden Research und mehreren Mails haben wir nun die Ergebnisse und möchten diese hier präsentieren.
+Wir haben uns ein paar Tage vor den Gemeinderatswahlen gefragt, welche Prinzipien die Listen im Bezirk Reutte vertreten und wie gut deren Internetauftritte gestaltet sind. Nach mehreren Stunden Research und mehreren Mails haben wir nun die Ergebnisse und möchten diese hier präsentieren.
 Dieser Post soll noch unentschlossenen Bürgerinnen und Bürgern im Entscheidungsprozess helfen.
 
 <link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
@@ -15,11 +15,11 @@ Dieser Post soll noch unentschlossenen Bürgerinnen und Bürgern im Entscheidung
 # Vorgehensweise
 
 Die Namen der Listen haben wir von der Webseite des Landes Tirol. (<a href="https://wahlen.tirol.gv.at/gemeinderats_und_buergermeisterwahlen_2022/bezirke/reutte.html" download>https://wahlen.tirol.gv.at/gemeinderats_und_buergermeisterwahlen_2022/bezirke/reutte.html</a>)
-Mit diesen erhaltenen Listen-Namen haben wir dann versucht über eine der größten Suchmaschinen alles Mögliche über die Liste herauszufinden (Facebook-Seiten, E-Mail Adressen, Webseiten, usw.).
+Mit diesen erhaltenen Listen-Namen haben wir dann versucht über eine der größten Suchmaschinen alles Mögliche über die Listen herauszufinden (Facebook-Seiten, E-Mail Adressen, Webseiten, usw.).
 
 Die erhaltenen Daten wurden dann in einem Tabellen-Programm zusammengefasst. (Dieses Dokument wird im CSV-Format am Ende des Blogs als Download angeboten).
 
-Zusätzlich haben wir eine Umfrage erstellt, mit Fragen, die uns als junge Bürgerinnen und Bürger als wichtig erscheinen. Diese Umfrage haben wir dann an alle Listen versendet (per Mail), von denen wir eine Mail-Adresse hatten.
+Zusätzlich haben wir eine Umfrage erstellt, welche Fragen klären soll, welche uns als junge Bürgerinnen und Bürger als wichtig erschienen. Diese Umfrage haben wir dann an alle Listen, von welchen E-Mail-Adressen vorhanden waren, versendet.
 
 Die erhaltenen Ergebnisse werden in folgenden Abschnitten präsentiert.
 (Auch diese Daten werden am Ende als CSV-Datei zum Download angeboten.)
@@ -37,15 +37,15 @@ Listen mit Facebook-Seite: 22
 Listen mit eigener Webseite: 11.5
 Listen per Mail kontaktiert: 18
 Listen die geantwortet haben: 5
-Listen die die Umfrage ausgefüllt haben: 4
+Listen welche die Umfrage ausgefüllt haben: 4
 
-Das bedeutet das folglich nur 26.47% der Listen im Bezirk Reutte über einen
+Das bedeutet, dass folglich nur 26.47 % der Listen im Bezirk Reutte über einen
 Internetauftritt verfügen.
 
 <br>
 <br>
 
-# Einrechzeitpunkte Umfrage
+# Einreichzeitpunkte Umfrage
 <br>
 
 <table id="table_einreich"></table>
@@ -57,7 +57,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_2"></table>
-<div id="legend-container-2"> </div>
+<ul id="legend-container-2"> </ul>
 <canvas class="pie" id="leistbaresWohnenChart"> </canvas>
 <div id="leistbaresWohnenOptional"> </div>
 
@@ -73,7 +73,7 @@ Internetauftritt verfügen.
 
 
 <table id="table_4"></table>
-<div id="legend-container-4"> </div>
+<ul id="legend-container-4"> </ul>
 <canvas class="pie" id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
 
@@ -98,7 +98,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_7"></table>
-<div id="legend-container-7"> </div>
+<ul id="legend-container-7"> </ul>
 <canvas class="pie" id="teureGuensiteWohnungen"> </canvas>
 <div id="teureGuensiteWohnungenOptional"> </div>
 
@@ -112,7 +112,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_9"></table>
-<div id="legend-container-9"> </div>
+<ul id="legend-container-9"> </ul>
 <canvas class="pie" id="projekteJugendliche"> </canvas>
 <div id="projekteJugendlicheOptional"> </div>
 
@@ -126,7 +126,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_11"></table>
-<div id="legend-container-11"> </div>
+<ul id="legend-container-11"> </ul>
 <canvas class="pie" id="gemeindeKinder"> </canvas>
 <div id="gemeindeKinderOptional"> </div>
 
@@ -137,11 +137,11 @@ Internetauftritt verfügen.
 <br>
 <br>
 
-# Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wer soll darauf Anspruch haben?
+# Wenn Kinderbetreuung von der Gemeinde aus geplant ist, wer soll darauf Anspruch haben?
 <br>
 
 <table id="table_13"></table>
-<div id="legend-container-13"> </div>
+<ul id="legend-container-13"> </ul>
 <canvas class="pie" id="kinderAnspruch"> </canvas>
 
 
@@ -151,7 +151,7 @@ Internetauftritt verfügen.
 <br>
 <br>
 
-# Wenn Kinderbetreuung von der Gemeinde aus geplant ist,  wie und für welche Altersgruppe soll diese ausgelegt werden? 
+# Wenn Kinderbetreuung von der Gemeinde aus geplant ist, wie und für welche Altersgruppe soll diese ausgelegt werden? 
 <br>
 
 <table id="table_14"></table>
@@ -175,11 +175,11 @@ Internetauftritt verfügen.
 <br>
 <br>
 
-# Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wie werden die Kosten gestaltet?
+# Wenn Kinderbetreuung von der Gemeinde aus geplant ist, wie werden die Kosten gestaltet?
 <br>
 
 <table id="table_16"></table>
-<div id="legend-container-16"> </div>
+<ul id="legend-container-16"> </ul>
 <canvas class="pie" id="kinderKosten"> </canvas>
 <div id="kinderKostenOptional"> </div>
 
@@ -194,7 +194,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_18"></table>
-<div id="legend-container-18"> </div>
+<ul id="legend-container-18"> </ul>
 <canvas class="pie" id="ausbauOeffi"> </canvas>
 <div id="ausbauOeffiOptional"> </div>
 
@@ -205,11 +205,11 @@ Internetauftritt verfügen.
 <br>
 <br>
 
-# Anreize  schaffen für "umweltfreundliche Mobilität"?
+# Anreize schaffen für "umweltfreundliche Mobilität"?
 <br>
 
 <table id="table_20"></table>
-<div id="legend-container-20"> </div>
+<ul id="legend-container-20"> </ul>
 <canvas class="pie" id="anreizOeffi"> </canvas>
 <div id="anreizOeffiOptional"> </div>
 
@@ -224,7 +224,7 @@ Internetauftritt verfügen.
 # Höhe der Vereinsförderung für?
 <br>
 
-<div id="legend-container-radar"> </div>
+<ul id="legend-container-radar"> </ul>
 <canvas id="vereine"> </canvas>
 
 
@@ -237,7 +237,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_31"></table>
-<div id="legend-container-31"> </div>
+<ul id="legend-container-31"> </ul>
 <canvas class="pie" id="transparenz"> </canvas>
 <div id="transparenzOptional"> </div>
 
@@ -251,7 +251,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_33"></table>
-<div id="legend-container-33"> </div>
+<ul id="legend-container-33"> </ul>
 <canvas class="pie" id="datenVeroeffentlichen"> </canvas>
 <div id="datenVeroeffentlichenOptional"> </div>
 
@@ -264,7 +264,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_35"></table>
-<div id="legend-container-35"> </div>
+<ul id="legend-container-35"> </ul>
 <canvas class="pie" id="digitalesGemeindeamt"> </canvas>
 <div id="digitalesGemeindeamtOptional"> </div>
 
@@ -276,7 +276,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_37"></table>
-<div id="legend-container-37"> </div>
+<ul id="legend-container-37"> </ul>
 <canvas class="pie" id="ausbauInternet5G"> </canvas>
 
 
