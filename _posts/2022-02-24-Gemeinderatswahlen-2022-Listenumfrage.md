@@ -57,7 +57,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_2"></table>
-<ul id="legend-container-2"> </ul>
+<div id="legend-container-2"> </div>
 <canvas class="pie" id="leistbaresWohnenChart"> </canvas>
 <div id="leistbaresWohnenOptional"> </div>
 
@@ -73,7 +73,7 @@ Internetauftritt verfügen.
 
 
 <table id="table_4"></table>
-<ul id="legend-container-4"> </ul>
+<div id="legend-container-4"> </div>
 <canvas class="pie" id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
 
@@ -98,7 +98,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_7"></table>
-<ul id="legend-container-7"> </ul>
+<div id="legend-container-7"> </div>
 <canvas class="pie" id="teureGuensiteWohnungen"> </canvas>
 <div id="teureGuensiteWohnungenOptional"> </div>
 
@@ -112,7 +112,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_9"></table>
-<ul id="legend-container-9"> </ul>
+<div id="legend-container-9"> </div>
 <canvas class="pie" id="projekteJugendliche"> </canvas>
 <div id="projekteJugendlicheOptional"> </div>
 
@@ -126,7 +126,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_11"></table>
-<ul id="legend-container-11"> </ul>
+<div id="legend-container-11"> </div>
 <canvas class="pie" id="gemeindeKinder"> </canvas>
 <div id="gemeindeKinderOptional"> </div>
 
@@ -141,7 +141,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_13"></table>
-<ul id="legend-container-13"> </ul>
+<div id="legend-container-13"> </div>
 <canvas class="pie" id="kinderAnspruch"> </canvas>
 
 
@@ -179,7 +179,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_16"></table>
-<ul id="legend-container-16"> </ul>
+<div id="legend-container-16"> </div>
 <canvas class="pie" id="kinderKosten"> </canvas>
 <div id="kinderKostenOptional"> </div>
 
@@ -194,7 +194,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_18"></table>
-<ul id="legend-container-18"> </ul>
+<div id="legend-container-18"> </div>
 <canvas class="pie" id="ausbauOeffi"> </canvas>
 <div id="ausbauOeffiOptional"> </div>
 
@@ -209,7 +209,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_20"></table>
-<ul id="legend-container-20"> </ul>
+<div id="legend-container-20"> </div>
 <canvas class="pie" id="anreizOeffi"> </canvas>
 <div id="anreizOeffiOptional"> </div>
 
@@ -224,7 +224,7 @@ Internetauftritt verfügen.
 # Höhe der Vereinsförderung für?
 <br>
 
-<ul id="legend-container-radar"> </ul>
+<div id="legend-container-radar"> </div>
 <canvas id="vereine"> </canvas>
 
 
@@ -237,7 +237,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_31"></table>
-<ul id="legend-container-31"> </ul>
+<div id="legend-container-31"> </div>
 <canvas class="pie" id="transparenz"> </canvas>
 <div id="transparenzOptional"> </div>
 
@@ -251,7 +251,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_33"></table>
-<ul id="legend-container-33"> </ul>
+<div id="legend-container-33"> </div>
 <canvas class="pie" id="datenVeroeffentlichen"> </canvas>
 <div id="datenVeroeffentlichenOptional"> </div>
 
@@ -264,7 +264,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_35"></table>
-<ul id="legend-container-35"> </ul>
+<div id="legend-container-35"> </div>
 <canvas class="pie" id="digitalesGemeindeamt"> </canvas>
 <div id="digitalesGemeindeamtOptional"> </div>
 
@@ -276,7 +276,7 @@ Internetauftritt verfügen.
 <br>
 
 <table id="table_37"></table>
-<ul id="legend-container-37"> </ul>
+<div id="legend-container-37"> </div>
 <canvas class="pie" id="ausbauInternet5G"> </canvas>
 
 
