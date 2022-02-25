@@ -398,6 +398,8 @@ const getOrCreateLegendList = (chart, id) => {
     listContainer.style.flexDirection = 'row';
     listContainer.style.margin = 0;
     listContainer.style.padding = 0;
+    listContainer.style.justifyContent = 'center';
+    listContainer.style.flexWrap = 'wrap';
 
     legendContainer.appendChild(listContainer);
   }
