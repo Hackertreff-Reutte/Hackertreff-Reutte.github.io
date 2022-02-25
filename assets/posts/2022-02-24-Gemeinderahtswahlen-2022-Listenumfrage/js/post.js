@@ -119,8 +119,6 @@ function createRadarGraph(data){
     dataSets.push(set);
   }
 
-  console.log(dataLabels)
-
   new Chart(document.getElementById("vereine"), {
     type: 'radar',
     data: {
