@@ -398,7 +398,7 @@ function createTables(data) {
   createTable(37, data, possibleAnswers[15]);
 }
 
-Papa.parse("/assets/posts/2022-02-24-Gemeinderahtswahlen-2022-Listenumfrage/csv/umfrage.csv", {
+Papa.parse("/assets/posts/2022-02-24-Gemeinderatswahlen-2022-Listenumfrage/csv/umfrage.csv", {
 	download: true,
   complete: function(results) {
     createTables(results.data);
