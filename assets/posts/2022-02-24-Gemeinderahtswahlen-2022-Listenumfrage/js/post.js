@@ -296,7 +296,7 @@ let possibleAnswers = [
     "Die Betreuung wird finanziell unterstützt < 50%",
     "Die Betreuung wird nicht finanziell unterstützt",
     "Dieses gilt es mit den Zuständigen abzuklären, eine Bedarfserhebung ist hier der essenzielle Grundstein.",
-    "Geringe Kindergartenbeiträge",
+    "Geringe Kindergarten-beiträge",
   ],
   [
     "Gegen Umsetzung",
