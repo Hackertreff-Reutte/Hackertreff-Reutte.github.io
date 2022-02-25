@@ -9,12 +9,14 @@ tags: Politik
 # Leistbares Wohnen für junge Erwachsene
 
 <table id="table_2"></table>
+<ul id="legend-container-2"> </ul>
 <canvas id="leistbaresWohnenChart"> </canvas>
 <div id="leistbaresWohnenOptional"> </div>
 
 # Soll die Gemeinde als Vermieter auftreten?
 
 <table id="table_4"></table>
+<ul id="legend-container-4"> </ul>
 <canvas id="gemeindeVermieter"> </canvas>
 <div id="gemeindeVermieterOptional"> </div>
 
@@ -25,24 +27,28 @@ tags: Politik
 # Wenn Wohnprojekte geplant sind, handelt es sich dann dabei um günstige oder teure Wohnungen?
 
 <table id="table_7"></table>
+<ul id="legend-container-7"> </ul>
 <canvas id="teureGuensiteWohnungen"> </canvas>
 <div id="teureGuensiteWohnungenOptional"> </div>
 
 # Projekte zugunsten Jugendlicher
 
 <table id="table_9"></table>
+<ul id="legend-container-9"> </ul>
 <canvas id="projekteJugendliche"> </canvas>
 <div id="projekteJugendlicheOptional"> </div>
 
 # Soll die Gemeinde Kinderbetreuung organisieren bzw. finanzieren?
 
 <table id="table_11"></table>
+<ul id="legend-container-11"> </ul>
 <canvas id="gemeindeKinder"> </canvas>
 <div id="gemeindeKinderOptional"> </div>
 
 # Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wer soll darauf Anspruch haben?
 
 <table id="table_13"></table>
+<ul id="legend-container-13"> </ul>
 <canvas id="kinderAnspruch"> </canvas>
 
 # Wenn Kinderbetreuung von der Gemeinde aus geplant ist,  wie und für welche Altersgruppe soll diese ausgelegt werden? 
@@ -56,18 +62,21 @@ tags: Politik
 # Wenn Kinderbetreuung von der Gemeinde aus  geplant ist, wie werden die Kosten gestaltet?
 
 <table id="table_16"></table>
+<ul id="legend-container-16"> </ul>
 <canvas id="kinderKosten"> </canvas>
 <div id="kinderKostenOptional"> </div>
 
 # Ausbau von öffentlichem Nahverkehr?
 
 <table id="table_18"></table>
+<ul id="legend-container-18"> </ul>
 <canvas id="ausbauOeffi"> </canvas>
 <div id="ausbauOeffiOptional"> </div>
 
 # Anreize  schaffen für "umweltfreundliche Mobilität"?
 
 <table id="table_20"></table>
+<ul id="legend-container-20"> </ul>
 <canvas id="anreizOeffi"> </canvas>
 <div id="anreizOeffiOptional"> </div>
 
@@ -76,24 +85,28 @@ tags: Politik
 # Ist Transparenz wichtig?
 
 <table id="table_31"></table>
+<ul id="legend-container-31"> </ul>
 <canvas id="transparenz"> </canvas>
 <div id="transparenzOptional"> </div>
 
 # Werden Protokolle, Beschlüsse und Daten prokativ veröffentlicht?
 
 <table id="table_33"></table>
+<ul id="legend-container-33"> </ul>
 <canvas id="datenVeroeffentlichen"> </canvas>
 <div id="datenVeroeffentlichenOptional"> </div>
 
 # Ausbau Digitalisierung (digitales Gemeindeamt)?
 
 <table id="table_35"></table>
+<ul id="legend-container-35"> </ul>
 <canvas id="digitalesGemeindeamt"> </canvas>
 <div id="digitalesGemeindeamtOptional"> </div>
 
 # Ausbau Internetinfrastruktur (Glasfaser, 5G)?
 
 <table id="table_37"></table>
+<ul id="legend-container-37"> </ul>
 <canvas id="ausbauInternet5G"> </canvas>
 
 <canvas id="test"> </canvas>
