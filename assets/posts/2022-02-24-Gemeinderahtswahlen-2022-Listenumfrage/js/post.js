@@ -158,6 +158,32 @@ function createRadarGraph(data){
 
 }
 
+function createTimestampTable(data){
+  let table = document.getElementById("table_einreich");
+
+  let head = document.createElement('tr');
+
+  let name = document.createElement('th');
+  name.innerText = "Liste";
+  head.appendChild(name);
+  let timestamp = document.createElement('th');
+  timestamp.innerText = "Zeitpunkt";
+  head.appendChild(timestamp);
+  table.appendChild(head);
+
+  for (let i = 1; i < data["data"].length; i++) {// loop through partys
+    let line = document.createElement('tr');
+    let th = document.createElement('th');
+    th.innerText = data["data"][i][1];
+    line.appendChild(th);
+    let td = document.createElement('td');
+    const date = new Date(Date.parse(data["data"][i][0].substring(0, data["data"][i][0].length - 4)));
+    td.innerText = date.toUTCString().substring(0, date.toUTCString().length - 4);
+    line.appendChild(td);
+    table.appendChild(line);
+  }
+}
+
 function createGraph(data){
     createPieGraph(data, 2, "leistbaresWohnenChart", "Leistbares Wohnen für junge Erwachsene");
     createPieGraph(data, 4, "gemeindeVermieter", "Soll die Gemeinde als Vermieter auftreten?");
@@ -175,7 +201,7 @@ function createGraph(data){
 
 
     createRadarGraph(data);
-
+    createTimestampTable(data);
     console.log(data);
 }
 

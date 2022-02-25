@@ -3,6 +3,8 @@ table, th, td{
   border: 1px solid #ddd;
   border-collapse: collapse;
   text-align: center;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
 }
 
 h1 {
