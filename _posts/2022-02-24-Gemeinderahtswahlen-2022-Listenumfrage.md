@@ -6,6 +6,27 @@ tags: Politik
 ---
 <link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
 
+Wir haben uns ein paar Tage vor der Bürgermeister*Innenwahl gefragt, welche Prinzipien die Listen im Bezirk Reutte vertreten und wie gut deren Internetauftritt gestaltet ist. Nach mehren Stunden Research und mehreren Mails haben wir nun die Ergebnisse und möchten diese hier präsentieren.
+Dieser Post soll noch unentschlossenen Bürgerinnen und Bürgern im Entscheidungsprozess helfen.
+
+<br>
+
+# Vorgehensweise
+
+Die Namen der Listen haben wir von der Webseite:
+https://wahlen.tirol.gv.at/gemeinderats_und_buergermeisterwahlen_2022/bezirke/reutte.html
+erhalten. Mit diesen erhaltenen Listen-Namen haben wir dann versucht über eine der größten Suchmaschinen alles Mögliche über die Liste herauszufinden (Facebook-Seiten, E-Mail Adressen, Webseiten, usw.).
+
+Die erhaltenen Daten wurden dann in einem Tabellen-Programm zusammengefasst. (Dieses Dokument wird im CSV-Format am Ende des Blogs als Download angeboten).
+
+Zusätzlich haben wir in der Gruppe eine Umfrage erstellt, mit Fragen, die uns als junge Bürgerinnen und Bürger als wichtig erscheinen. Diese Umfrage haben wir dann an alle Listen versendet (per Mail), von denen wir eine Mail-Adresse hatten.
+
+Die erhaltenen Ergebnisse werden in folgenden Abschnitten präsentiert.
+(Auch diese Daten werden am Ende als CSV-Datei zum Download angeboten.)
+
+
+PS: Alle Listen, die keine Mail erhalten haben (wahrscheinlich aufgrund fehlendem Internetauftritts) können sich gerne bei uns melden, um einen Link zur Umfrage zu erhalten.
+
 <br>
 
 # Metadaten
@@ -31,6 +52,7 @@ Internetauftritt verfügen.
 
 
 <br>
+
 # Leistbares Wohnen für junge Erwachsene
 <br>
 
@@ -264,6 +286,8 @@ Internetauftritt verfügen.
 
 # Download Daten
 <a href="{{ layout.post_assets | liquify }}/csv/umfrage.csv" download>Download Umfrage Daten (CSV)</a>
+
+<a href="{{ layout.post_assets | liquify }}/csv/listen_2020.csv" download>Download Listen Daten (CSV)</a>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
