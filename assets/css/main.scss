@@ -153,3 +153,20 @@ pre {
   content: "" !important;  //todo make this nicer
   margin-right: 0px !important;
 }
+
+
+//rss feed icon
+
+.feed {
+  fill: var(--alt-color);
+}
+
+.feed:hover {
+  fill: var(--bg-color);
+}
+
+#feed-svg {
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: middle;
+}
