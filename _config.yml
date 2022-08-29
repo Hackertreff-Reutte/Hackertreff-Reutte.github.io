@@ -24,6 +24,7 @@ plugins:
   - jemoji
   - jekyll-seo-tag
   - jekyll-sitemap
+  - jekyll-feed
 
 # Including jekyll-shell-theme using the jekyll-remote-theme plugin
 #remote_theme: tareqdandachi/jekyll-shell-theme
@@ -54,3 +55,6 @@ defaults:
         height: 514
         width: 514
         alt: Hackertreff Reutte Logo
+
+feed:
+  excerpt_only: true
