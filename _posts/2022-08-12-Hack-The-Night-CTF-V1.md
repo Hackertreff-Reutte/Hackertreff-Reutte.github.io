@@ -34,6 +34,10 @@ Die Aufgaben sind für Beginner und Intermediate Personen ausgelegt und können 
 
 Nein
 
+## Wann findet er CTF statt?
+
+10.09.2022 14:00 (CEST)
+
 ## Gibt es irgendwo noch mehr Infos?
 
 Ja du kannst auf unserer Telegram-Gruppe beitretten, um aktulle Infos zu erhalten oder Fragen zu stellen.
