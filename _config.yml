@@ -7,8 +7,8 @@ locale: de
 email: HackertreffReutte@protonmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Die Webseite des Hackertreffs Reutte
-baseurl: "/" # the subpath of your site
-url: "https://hackertreff-reutte.com" # the base hostname & protocol for your site
+baseurl: "" # the subpath of your site
+url: "" # the base hostname & protocol for your site
 telegram_username: HackertreffReutte
 github_username:  Hackertreff-Reutte
 

@@ -5,7 +5,8 @@ gemspec
 
 gem "html-proofer"
 # Including GitHub Pages gem
-gem "jekyll", group: :jekyll_plugins
+#gem "jekyll", group: :jekyll_plugins
+gem "github-pages", group: :jekyll_plugins
 
 # Plugins used by the theme
 group :jekyll_plugins do
