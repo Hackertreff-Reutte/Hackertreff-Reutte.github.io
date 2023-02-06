@@ -13,7 +13,7 @@ image:
 Wir haben uns ein paar Tage vor den Gemeinderatswahlen gefragt, welche Prinzipien die Listen im Bezirk Reutte vertreten und wie gut deren Internetauftritte gestaltet sind. Nach mehreren Stunden Research und mehreren Mails haben wir nun die Ergebnisse und möchten diese hier präsentieren.
 Dieser Post soll noch unentschlossenen Bürgerinnen und Bürgern im Entscheidungsprozess helfen.
 
-<link rel="stylesheet" href="{{ layout.post_assets | liquify }}/css/post.css">
+<link rel="stylesheet" href="{{ layout.post_assets }}/css/post.css">
 
 <br>
 
@@ -156,7 +156,7 @@ Internetauftritt verfügen.
 <br>
 <br>
 
-# Wenn Kinderbetreuung von der Gemeinde aus geplant ist, wie und für welche Altersgruppe soll diese ausgelegt werden? 
+# Wenn Kinderbetreuung von der Gemeinde aus geplant ist, wie und für welche Altersgruppe soll diese ausgelegt werden?
 <br>
 
 <table id="table_14"></table>
@@ -290,13 +290,13 @@ Internetauftritt verfügen.
 <br>
 
 # Download Daten
-<a href="{{ layout.post_assets | liquify }}/csv/umfrage.csv" download>Download Umfrage Daten (CSV)</a>
+<a href="{{ layout.post_assets }}/csv/umfrage.csv" download>Download Umfrage Daten (CSV)</a>
 
-<a href="{{ layout.post_assets | liquify }}/csv/listen_2020.csv" download>Download Listen Daten (CSV)</a>
+<a href="{{ layout.post_assets }}/csv/listen_2020.csv" download>Download Listen Daten (CSV)</a>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.1/papaparse.min.js" integrity="sha512-EbdJQSugx0nVWrtyK3JdQQ/03mS3Q1UiAhRtErbwl1YL/+e2hZdlIcSURxxh7WXHTzn83sjlh2rysACoJGfb6g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="{{ layout.post_assets | liquify }}/js/post.js"></script>
+<script src="{{ layout.post_assets }}/js/post.js"></script>
 
 

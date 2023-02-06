@@ -23,14 +23,14 @@ Der Workshop hat unter anderem folgende Themen behandelt:
 
 Fazit:
 
-Der Workshop ist ohne Probleme abgehalten worden und die Schülerinnen und Schüler haben begeistert mitgearbeitet. Wir glauben, dass wir unser Ziel, die Schülerinnen und Schüler für Microcontroller und das Programmieren im Allgemeinen zu begeistern, erreichen konnten. 
+Der Workshop ist ohne Probleme abgehalten worden und die Schülerinnen und Schüler haben begeistert mitgearbeitet. Wir glauben, dass wir unser Ziel, die Schülerinnen und Schüler für Microcontroller und das Programmieren im Allgemeinen zu begeistern, erreichen konnten.
 
 <br>
 Workshop Dokumente:
 
-Für den Workshop wurde ein PDF erstellt, dass als Vorlage für einen ähnlichen Workshop verwendet werden kann. 
+Für den Workshop wurde ein PDF erstellt, dass als Vorlage für einen ähnlichen Workshop verwendet werden kann.
 
-Workshop Arduino Ampelsteuerung <a href="{{ layout.post_assets | liquify }}/arduinoAmpel.ino" download>[Download]</a>
+Workshop Arduino Ampelsteuerung <a href="{{ layout.post_assets }}/arduinoAmpel.ino" download>[Download]</a>
 
 <br>
 Info:
