@@ -1,0 +1,35 @@
+﻿name: build
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch'     
+        required: true
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+      - run: |
+          bundle install
+          echo "baseurl: \"/${{ github.event.inputs.branch }}\"" >> overwrite.yml
+          bundle exec jekyll build --config _config.yml,overwrite.yml
+      - uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+          clean: false
+      - run: |
+          rm -rf ${{ github.event.inputs.branch }}
+          mkdir -p ${{ github.event.inputs.branch }}
+          cp _site/* ${{ github.event.inputs.branch }} -r
+          git add .
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git commit -m "Build ${{ github.event.inputs.branch }}" && git push
