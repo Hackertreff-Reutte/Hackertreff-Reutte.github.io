@@ -30,7 +30,7 @@ Workshop Dokumente:
 
 Für den Workshop wurde ein PDF erstellt, dass als Vorlage für einen ähnlichen Workshop verwendet werden kann. 
 
-Workshop Arduino Ampelsteuerung <a href="{{ layout.post_assets | liquify }}/arduinoAmpel.ino" download>[Download]</a>
+Workshop Arduino Ampelsteuerung <a href="{{ layout.post_assets | liquify | relative_url }}/arduinoAmpel.ino" download>[Download]</a>
 
 <br>
 Info:

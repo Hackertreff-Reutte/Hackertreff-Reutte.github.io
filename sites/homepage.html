@@ -8,10 +8,11 @@ title: home
 <span style="color: var(--alt-color)">Willkommen auf der Website des Hackertreffs Reutte!</span><br>
 Auf dieser Website werden Workshops, Vorträge und Treffen angekündigt.<br>
 <br>
-Solltest du einen Vortrag oder ein Treffen besuchen wollen, dann kannst du der Telegram-Gruppe beitreten oder einfach gelegentlich hier vorbeischauen, um die neuesten Infos zu erhalten.<br>
+Solltest du einen Vortrag oder ein Treffen besuchen wollen, dann kannst du der Telegram-Gruppe beitreten oder einfach
+gelegentlich hier vorbeischauen, um die neuesten Infos zu erhalten.<br>
 Wir freuen uns auch, wenn du selbst einen Vortrag halten oder eines deiner Projekte vorstellen willst.<br>
 <br>
-Telegram Gruppe: <a href="/telegram.html">Link</a><br>
+Telegram Gruppe: <a href={{ "/telegram.html" | relative_url }}>Link</a><br>
 <br>
 Wir freuen uns, wenn du dich bald bei uns in der Gruppe blicken lässt.<br>
 ~ HTR<br>
@@ -26,21 +27,21 @@ Wir freuen uns, wenn du dich bald bei uns in der Gruppe blicken lässt.<br>
 
 
 <ul class="blog_entries">
-    {% for post in site.posts limit:3 %}
-      <li>
-        <h2><a href="{{ post.url }}">{{ post.post-title | default:  post.title }}</a></h2>
-        {{ post.excerpt }}
+  {% for post in site.posts limit:3 %}
+  <li>
+    <h2><a href={{ post.url | relative_url }}>{{ post.post-title | default: post.title }}</a></h2>
+    {{ post.excerpt }}
 
-        Tags: 
-        {% for tags in post.tags %}
-          {{ tags }}
-        {% endfor %}
-        <br>
-        {{ post.date  | date: "%m/%d/%Y" }}&nbsp; &nbsp; &nbsp; &nbsp;
-        AutorIn: {{ post.author }}
-
-        <br>
-        <br>
-      </li>
+    Tags:
+    {% for tags in post.tags %}
+    {{ tags }}
     {% endfor %}
-  </ul>
+    <br>
+    {{ post.date | date: "%m/%d/%Y" }}&nbsp; &nbsp; &nbsp; &nbsp;
+    AutorIn: {{ post.author }}
+
+    <br>
+    <br>
+  </li>
+  {% endfor %}
+</ul>
