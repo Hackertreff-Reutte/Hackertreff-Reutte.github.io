@@ -25,6 +25,10 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-feed
+  - jekyll-liquify
+
+whitelist:
+  - jekyll-liquify
 
 # Including jekyll-shell-theme using the jekyll-remote-theme plugin
 #remote_theme: tareqdandachi/jekyll-shell-theme

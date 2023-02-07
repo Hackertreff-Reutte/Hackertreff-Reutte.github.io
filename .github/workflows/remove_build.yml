@@ -1,0 +1,23 @@
+﻿name: remove build
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch'     
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+      - run: |
+          rm -rf ${{ github.event.inputs.branch }}
+          git add .
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git commit -m "Remove build ${{ github.event.inputs.branch }}" && git push
