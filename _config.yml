@@ -7,8 +7,8 @@ locale: de
 email: HackertreffReutte@protonmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Die Webseite des Hackertreffs Reutte
-baseurl: "/" # the subpath of your site
-url: "https://hackertreff-reutte.com" # the base hostname & protocol for your site
+baseurl: "" # the subpath of your site
+url: "" # the base hostname & protocol for your site
 telegram_username: HackertreffReutte
 github_username:  Hackertreff-Reutte
 
@@ -24,6 +24,7 @@ plugins:
   - jemoji
   - jekyll-seo-tag
   - jekyll-sitemap
+  - jekyll-feed
 
 # Including jekyll-shell-theme using the jekyll-remote-theme plugin
 #remote_theme: tareqdandachi/jekyll-shell-theme
@@ -54,3 +55,6 @@ defaults:
         height: 514
         width: 514
         alt: Hackertreff Reutte Logo
+
+feed:
+  excerpt_only: true
