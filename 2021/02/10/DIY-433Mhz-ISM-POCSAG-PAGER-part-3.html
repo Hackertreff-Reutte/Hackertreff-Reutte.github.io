@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <html lang="de">
+
+  <title>
+    Diy 433mhz Ism Pocsag Pager Part 3 - Hackertreff-Reutte
+  </title>
+  <link rel="stylesheet" href=/assets/css/main.css>
+
+  <link rel="icon" type="image/svg+xml" href=/assets/favicon.svg>
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Diy 433mhz Ism Pocsag Pager Part 3 | Hackertreff-Reutte</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Diy 433mhz Ism Pocsag Pager Part 3" />
+<meta name="author" content="HTR" />
+<meta property="og:locale" content="de" />
+<meta name="description" content="Nach langer Zeit geht es mit dem Projekt wieder ein bisschen weiter. In diesem Post wird der SI4432 Chip genauer untersucht und versucht ihn als FSK-Sender zu konfigurieren, um ihn dann schlussendlich als Sende- und Empfangschip für den Pager verwenden zu können." />
+<meta property="og:description" content="Nach langer Zeit geht es mit dem Projekt wieder ein bisschen weiter. In diesem Post wird der SI4432 Chip genauer untersucht und versucht ihn als FSK-Sender zu konfigurieren, um ihn dann schlussendlich als Sende- und Empfangschip für den Pager verwenden zu können." />
+<link rel="canonical" href="/2021/02/10/DIY-433Mhz-ISM-POCSAG-PAGER-part-3.html" />
+<meta property="og:url" content="/2021/02/10/DIY-433Mhz-ISM-POCSAG-PAGER-part-3.html" />
+<meta property="og:site_name" content="Hackertreff-Reutte" />
+<meta property="og:image" content="/assets/favicon.png" />
+<meta property="og:image:height" content="514" />
+<meta property="og:image:width" content="514" />
+<meta property="og:image:alt" content="Hackertreff Reutte Logo" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-02-10T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/favicon.png" />
+<meta name="twitter:image:alt" content="Hackertreff Reutte Logo" />
+<meta property="twitter:title" content="Diy 433mhz Ism Pocsag Pager Part 3" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"HTR"},"dateModified":"2021-02-10T00:00:00+00:00","datePublished":"2021-02-10T00:00:00+00:00","description":"Nach langer Zeit geht es mit dem Projekt wieder ein bisschen weiter. In diesem Post wird der SI4432 Chip genauer untersucht und versucht ihn als FSK-Sender zu konfigurieren, um ihn dann schlussendlich als Sende- und Empfangschip für den Pager verwenden zu können.","headline":"Diy 433mhz Ism Pocsag Pager Part 3","image":{"height":514,"width":514,"alt":"Hackertreff Reutte Logo","url":"/assets/favicon.png","@type":"imageObject"},"mainEntityOfPage":{"@type":"WebPage","@id":"/2021/02/10/DIY-433Mhz-ISM-POCSAG-PAGER-part-3.html"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/favicon.svg"},"name":"HTR"},"url":"/2021/02/10/DIY-433Mhz-ISM-POCSAG-PAGER-part-3.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+</head>
+
+  <body class="small">
+
+    <header>
+  <div class="menu">
+    <ul>
+      <li class="page_title">Diy 433mhz Ism Pocsag Pager Part 3</li><li><a href=/>/home</a></li><li><a href=/blog.html>/blog</a></li><li><a href=/telegram.html>/telegram</a></li><li><a href=/faq.html>/FAQ</a></li></ul>
+  </div>
+</header>
+
+    <h1 style="color: var(--alt-color)">DIY 433MHz ISM POCSAG Pager #3</h1>
+
+<p>Nach langer Zeit geht es mit dem Projekt wieder ein bisschen weiter. 
+In diesem Post wird der SI4432 Chip genauer untersucht und versucht ihn als 
+FSK-Sender zu konfigurieren, um ihn dann schlussendlich als 
+Sende- und Empfangschip für den Pager verwenden zu können.</p>
+
+<h1 id="vorweg">Vorweg:</h1>
+<p>Die Nachrichten werden nicht mit dem eingebauten Buffer versendet, 
+da dieser Buffer zu klein ist, um sinnvoll POCSAG-Nachrichten empfangen und 
+senden zu können. Weiters ist auch das Packet-Handling nicht wirklich geeignet 
+für POCSAG. Eine ausführlichere Erläuterung ist weiter unten im Post zu finden.</p>
+
+<h1 id="ziele">Ziele:</h1>
+<ul>
+  <li>Booten</li>
+  <li>Reset</li>
+  <li>Frequenz</li>
+  <li>Deviation (Shift)</li>
+  <li>Datenrate</li>
+  <li>Modulationstyp</li>
+  <li>Modulationdata Source</li>
+  <li>Direct Mode</li>
+  <li>Senden (direct mode)</li>
+  <li>Frequenz Offset</li>
+  <li>Packet Handler ausschalten</li>
+  <li>Preamble</li>
+  <li>SYNC Wort</li>
+  <li>RX Modem</li>
+  <li>Empfangen (direct mode)</li>
+  <li>Quarz / Frequenz tuning</li>
+  <li>Sende-Leistung</li>
+  <li>AFC</li>
+  <li>GPIO</li>
+</ul>
+
+<p><br /></p>
+
+<h1 id="booten">Booten</h1>
+
+<p>Es gibt 4 verschiedene Zustände:</p>
+<ul>
+  <li>Shutdown</li>
+  <li>IDLE</li>
+  <li>TX State</li>
+  <li>RX State</li>
+</ul>
+
+<p>Weiters hat der IDLE state 5 Unterzustände:</p>
+<ul>
+  <li>Standby Mode</li>
+  <li>Sleep Mode</li>
+  <li>Sensor Mode</li>
+  <li>Ready Mode</li>
+  <li>Tune Mode</li>
+</ul>
+
+<p>Bevor in einem Register ein Mode geschrieben wird, können wir zuerst aus dem “Device Status “Register (02h) auslesen, in welchem Zustand wir uns befinden.
+Die ersten 2 Bits (cps) zeigen an, in welchem Status sich das Gerät befindet.</p>
+
+<ul>
+  <li>00 = Idle</li>
+  <li>01 = RX</li>
+  <li>10 = TX</li>
+</ul>
+
+<p>Achtung! Reset value des Registers ist nicht definiert. Jedoch sollte cps gesetzt sein.</p>
+
+<p>Nun können wir ein kleines Programm schreiben, das testet in welchem Zustand sich der Chip befindet.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">printDeviceStatusRegister</span><span class="p">(){</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x02</span><span class="p">),</span> <span class="n">BIN</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Ergebnis = 1111111111111111</p>
+
+<p>Wie wir erkennen können, hat uns der SPI nichts Sinnvolles geliefert. Dies liegt daran, dass der SPI-Bus im Shutdown-Zustand deaktiviert ist.
+Um nun den Shutdown-Zustand zu verlassen (SDN == HIGH -&gt; Shutdown-State)
+und den IDLE-Zustand zu betreten, wird der SDN auf LOW gezogen.
+Danach wird wieder mit dem Code von oben überprüft in welchem Zustand wir uns befinden.</p>
+
+<p>Ergebnis = 0 (= 00000000)</p>
+
+<p>Somit erkennen wir, dass sich der Chip momentan in dem IDLE-Zustand befindet.</p>
+
+<p>Um nun den Modus des IDLE-Zustand zu wechseln, kann das Register “Operating Mode and Function Control 1” (07h) verwendet werden.</p>
+
+<p>Dieses lesen wir zuerst einmal aus, um zu sehen, wie es momentan konfiguriert ist. Laut Datenblatt sollte der Reset-Wert = 00000001 sein.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">printOperatingModeandFunctionControl1</span><span class="p">(){</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x07</span><span class="p">),</span> <span class="n">BIN</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Ergebnis = 1 (= 00000001)</p>
+
+<p>Somit befinden wir uns laut Datenblatt im IDLE-Ready-Mode.
+Nun versuchen wir den Chip in den Standby-Mode zusetzen, indem wir in das
+07h Register 0h schreiben.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">setIdleStandby</span><span class="p">(){</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="mh">0x0</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Nach erneutem Auslesen des Registers steht nun der Wert 0h drinnen und der Chip befindet sich somit im IDLE-Standby-Mode.</p>
+
+<p>Somit wurde der Chip erfolgreich zum Booten gebracht.</p>
+
+<p><br /></p>
+
+<h1 id="reset">Reset</h1>
+
+<p>Als nächstes kümmern wir uns um den Software-Reset. Dieser kann getriggert werden indem in das Register 07h “Operating Mode and Function Control 1” auf das 8. Bit eine 1 gschrieben wird.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">reset</span><span class="p">(){</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000000</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Ob der Reset funktioniert hat, kann mithilfe der vorherigen Funktionen getestet werden. Zuerst wird der Chip in den Standby-Modus versetzt und danach wird ein Reset getriggert. Nun sollte der Wert des 07h Registers wieder 1 (= 00000001) sein und das ist er auch.</p>
+
+<p>Es würde auch noch expliziete Resets/Clears für den TX-FIFO und RX-FIFO im Register 08h “Operating Mode and Function Control 2” geben, jedoch werden diese momentan nicht benötigt.</p>
+
+<p><br /></p>
+
+<h1 id="frequenz">Frequenz</h1>
+
+<p>Um die Frequenz einstellen zu können, benötigt man 3 Register:</p>
+<ul>
+  <li>Frequency Band Select</li>
+  <li>Nominal Carrier Frequency 1</li>
+  <li>Nominal Carrier Frequency 0</li>
+</ul>
+
+<p>Die beiden unteren Register sind nur dafür da, den Wert für die Nominal Carrier Frequency zu speichern, da der Wert 16 Bit groß ist, aber das Register nur 8 Bit speichern kann. Das erste Register (“Frequency Band Select”) beinhaltet 3 Attribute. Die ersten 5 Bits [0..4] beinhalten den Wert für das Band, das Bit 5
+beschreibt, ob es sich um ein “high band” handelt oder nicht und das Bit 6 gibt
+das siteband an. (1 = “low-side injection” (bevorzugt) und 0 = “high-side injection”)</p>
+
+<p>Ein “high band” ist jede Frequenz die größer als 479.9 MHz ist.
+Also muss das Bit 1 sein, wenn die Frequenz größer als 479.9Mhz ist, ansonsten
+0.</p>
+
+<p>Es ist auch wichtig beim Programmieren der Frequenzen die Grenzen zu beachten:</p>
+<ul>
+  <li>Min Freq (Band): 240 MHz</li>
+  <li>Max Freq (Band): 930 Mhz</li>
+</ul>
+
+<p>Was das Bit für das Siteband macht, wird im Datenblatt nicht beschrieben, aber laut diversem Github-Code sollte das Bit immer 1 sein.</p>
+
+<p>Nun können wir uns mit einer kleinen Formel den fb-Register-Wert ausrechnen.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>double fb_f = (freq / (10.0 * (hbsel + 1))) - 24
+int fb = (int) fb
+</code></pre></div></div>
+<p>Achtung: Bei fb_f muss es sich in dem Fall um eine Kommazahl handeln, da wir die Kommastellen noch brauchen für das fc-Register.
+(Info: hbsel kann mit einem If-Statement ermittelt werden (&lt; 480 Mhz))</p>
+
+<p>Nun haben wir die Werte für fb und hbsel (high band select) und sbsel (side band select) (= 1) und somit sind
+alle Werte für das “Frequency-Band-Select” Register vorhanden.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fbsr = (sbsel &lt;&lt; 6) | (hbsel &lt;&lt; 5) | fb
+</code></pre></div></div>
+
+<p>Als nächstes müssen die Werte für den Nominal Carrier ermittelt werden.
+Diese Werte definieren, welche genaue Frequenz dann im ausgewählten Band 
+verwendet wird. Um diesen Wert zu bestimmen, kann folgende Formel verwendet
+werden:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fc = (int) ((fb_f - fb) * 64000);
+</code></pre></div></div>
+
+<p>(fb_f - fb) liefert nur die Kommmazahlen.
+Dieser 16 Bit große Wert kann dann in die 2 Register geladen werden, 
+wobei im Register “Nominal Carrier Frequency 1” die 8 MSB stehen und im
+Register “Nominal Carrier Frequency 0” die 8 LSB.</p>
+
+<p>Somit wurden alle Register bestimmt.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//freq in Mhz (5Mhz = 5.0)</span>
+<span class="kt">void</span> <span class="nf">setFrequency</span><span class="p">(</span><span class="kt">double</span> <span class="n">freq</span><span class="p">){</span>
+  
+  <span class="kt">uint8_t</span> <span class="n">hbsel</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">fb_f</span><span class="p">;</span>
+  <span class="kt">uint8_t</span> <span class="n">fb</span><span class="p">;</span>
+  <span class="kt">uint16_t</span> <span class="n">fc</span><span class="p">;</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">freq</span> <span class="o">&lt;</span> <span class="mi">240</span> <span class="n">or</span> <span class="n">freq</span> <span class="o">&gt;</span> <span class="mi">930</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Freq out of bounds"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">freq</span> <span class="o">&lt;</span> <span class="mi">480</span><span class="p">){</span>
+    <span class="n">hbsel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+    <span class="n">hbsel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">//calculate the value for the fb register with float</span>
+  <span class="n">fb_f</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq</span> <span class="o">/</span> <span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="p">(</span><span class="n">hbsel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">-</span> <span class="mi">24</span><span class="p">;</span>
+
+  <span class="c1">//just hte value for the fb register (remove the fractional part)</span>
+  <span class="n">fb</span> <span class="o">=</span> <span class="p">((</span><span class="kt">uint8_t</span><span class="p">)</span> <span class="n">fb_f</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11111</span><span class="p">;</span>
+
+  <span class="c1">//calculat the fractional component</span>
+  <span class="n">fc</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint16_t</span><span class="p">)</span> <span class="p">((</span><span class="n">fb_f</span> <span class="o">-</span> <span class="n">fb</span><span class="p">)</span> <span class="o">*</span> <span class="mi">64000</span><span class="p">);</span>
+
+  <span class="c1">//write to the register 0x75 frequency band select </span>
+  <span class="c1">//(bit 5 = hbsel (highband select) and the lower are the fb (frequency band))</span>
+  <span class="c1">//bit 6 is the siteband select and the recommended value is 1 so that the rx</span>
+  <span class="c1">//frequency is below (low-side injection)</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x75</span><span class="p">,</span> <span class="mi">0</span><span class="n">b1</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="n">hbsel</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span> <span class="o">|</span> <span class="n">fb</span><span class="p">);</span>
+
+
+  <span class="c1">//write the upper 8 bit for the fc to the "Nominal Carrier Frequency 1"</span>
+  <span class="c1">//register</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x76</span><span class="p">,</span> <span class="n">fc</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">);</span>
+
+  <span class="c1">//write the lower 8 bit for the fc  to the "Nominal Carrier Frequency 0"</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x77</span><span class="p">,</span> <span class="n">fc</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Durch dieses Verfahren entstehen Rundungsfehler und diese sind unter anderem durch
+die Auflösung der Frequenz vom Chip gegeben. Um schlussendlich zu überprüfen, 
+welche Frequenz gespeichert worden ist oder um einfach auszulesen welche Frequenz gespeichert ist, kann folgende Funktion verwendet werden:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">printFrequency</span><span class="p">(){</span>
+
+  <span class="kt">uint8_t</span> <span class="n">fbsr</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x75</span><span class="p">);</span>
+
+  <span class="kt">uint8_t</span> <span class="n">hbsel</span> <span class="o">=</span> <span class="p">(</span><span class="n">fbsr</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b1</span><span class="p">;</span>
+  <span class="kt">uint8_t</span> <span class="n">fb</span> <span class="o">=</span> <span class="n">fbsr</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11111</span><span class="p">;</span>
+
+  <span class="kt">uint8_t</span> <span class="n">fc_higher</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x76</span><span class="p">);</span>
+  <span class="kt">uint8_t</span> <span class="n">fc_lower</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x77</span><span class="p">);</span>
+
+  <span class="kt">uint16_t</span> <span class="n">fc</span> <span class="o">=</span> <span class="p">(</span><span class="n">fc_higher</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">fc_lower</span><span class="p">;</span>
+
+  <span class="kt">double</span> <span class="n">freq</span> <span class="o">=</span> <span class="mi">10</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="p">(</span><span class="n">hbsel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">fb</span> <span class="o">+</span> <span class="mi">24</span> <span class="o">+</span> <span class="n">fc</span> <span class="o">/</span> <span class="mi">64000</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"Stored Frequency: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">DEC</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Die Formel für diese Berechnung ist auch im Datenblatt zu finden.</p>
+
+<p>INFO: Ich würde nicht empfehlen die Formel aus dem Datenblatt zu verwenden, für
+die Berechnung des fc-Wertes, da diese “falsche” Werte liefert, weiters bin ich
+mir nicht sicher ob das XLS-Dokument von Silicon Labs für die Überprüfung geeignet ist. Ich habe mir diverse SI4432-Projekte auf Github angesehen und 
+diese verwenden alle die oben angeführte Berechnungsmethode, welche in meinen 
+Augen auch sehr sinnvoll erscheint.
+Sollte ich mich geirrt haben freue ich mich über Feedback.</p>
+
+<p><br /></p>
+
+<h1 id="deviation-shift">Deviation (Shift)</h1>
+
+<p>Der SI4432 unterstützt einen Shift / eine Deviation von +-1 bis +-320 kHz und kann in Schritten von 625 Hz eingestellt werden. (Auflösung = 625Hz per Inkrement).
+Bei Frequenz-Modulation ändert sich dann die Frequenz um +- des Shifts.</p>
+
+<p>Der Deviation/Shift-Register-Wert lässt sich wie folgt errechnen:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fd = shift / 625 
+</code></pre></div></div>
+
+<p>Der fd-Wert kann dann ins Register 72h geschrieben werden.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//deviation in khz  (50kHz = 50)</span>
+<span class="kt">void</span> <span class="nf">setDeviation</span><span class="p">(</span><span class="kt">double</span> <span class="n">deviation</span><span class="p">){</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">deviation</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">deviation</span> <span class="o">&gt;=</span> <span class="mi">320</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Deviation out of bounds"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kt">uint8_t</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">round</span><span class="p">(</span><span class="n">deviation</span> <span class="o">/</span> <span class="mi">0</span><span class="p">.</span><span class="mi">625</span><span class="p">);</span>
+
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x72</span><span class="p">,</span> <span class="n">fd</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p><br /></p>
+
+<p>Diese Berrechnung liefert teilweise einige merkwürde Zahlen. Jedoch stimmen
+sie mit dem XLS-Dokument von Silicon-Labs überein.</p>
+
+<h1 id="datenrate">Datenrate</h1>
+
+<p>Die Datenrate ist konfigurierbar zwischen 1 - 128 kbps / 0.123 - 256 kbps.
+(Je nach Datenblatt)
+Achtung ist geboten, wenn die Datenrate unter 30 kbps liegt, denn dann muss “txdtrtscale” im Register
+70h auf 1 gesetzt werden, andernfalls auf 0.</p>
+
+<p>Die Datenrate lässt sich wie folgt errechnen:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if rate &lt; 30
+    scale = 2097152
+else
+    scale = 65536.0
+
+txdr = round(rate * scale / 1000.0)
+</code></pre></div></div>
+
+<p>Achtung: Hier wird wieder eine andere Formel verwendet, als im Datenblatt
+angeführt, da die Formel im Datenblatt zu Ergebnissen führt, die keinen Sinn machen. Die jetzt verwendete Formel stammt aus einem Github-Projekt und stimmt
+auch mit den Werten der XLS-Datei von Silicon Labs überein.</p>
+
+<p>Bei der Datenrate die wir erhalten, handelt es sich um eine 16 Bit Zahl und diese wird wieder in 2 Registern abgespeichert:</p>
+<ul>
+  <li>TX Data Rate 1 (obere 8 Bit (MSB)) (6eh)</li>
+  <li>TX Data Rate 0 (untere 8 Bit (LSB)) (6fh)</li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//datarate in kbps (3kbps = 3)</span>
+<span class="kt">void</span> <span class="nf">setDataRate</span><span class="p">(</span><span class="kt">double</span> <span class="n">datarate</span><span class="p">){</span>
+
+  <span class="kt">uint8_t</span> <span class="n">txdtrtscale</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">scale</span><span class="p">;</span>
+  <span class="kt">uint16_t</span> <span class="n">txdr</span><span class="p">;</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">datarate</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="n">datarate</span> <span class="o">&gt;</span> <span class="mi">128</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"Datarate out of bounds"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">datarate</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">){</span>
+    <span class="n">txdtrtscale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="mi">2097152</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+    <span class="n">txdtrtscale</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+  <span class="n">txdr</span> <span class="o">=</span> <span class="n">round</span><span class="p">(</span><span class="n">datarate</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="c1">//write the new datarate</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x6E</span><span class="p">,</span> <span class="n">txdr</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x6F</span><span class="p">,</span> <span class="n">txdr</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+
+  <span class="c1">//update the txdtrtscale bit in the register 70h</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x70</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x70</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11011111</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">txdtrtscale</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Info zum Direct-Mode:</p>
+
+<p>Wenn der Direct-Mode verwendet wird (zb mit FSK), dann ist diese Einstellung relativ sinnlos, da die Datenrate über die Geschwindigkeit der übertragenden Daten 
+festgelegt wird. Folglich sollten die Daten auch ununterbrochen übertragen
+werden, da es sonst zu verschiedenen Datenraten kommen kann (Wichtig bei zB.
+SPI)</p>
+
+<p><br /></p>
+
+<h1 id="modulationstyp">Modulationstyp</h1>
+
+<p>Als nächstes wird versucht den Modulationstypen einzustellen.
+Der SI4432 Chip untersützt grundsätzlich 4 verschiedene Modulationsarten:</p>
+<ul>
+  <li>Unmodulated Carrier (0b00)</li>
+  <li>OOK On-Off-Keying (0b01)</li>
+  <li>FSK Frequency-Shift-Keying (0b10)</li>
+  <li>GFSK Gaussian-Frequency-Shift-Keying (0b11)</li>
+</ul>
+
+<p>Dieser Wert kann im Register 71h “Modulation Mode Control 2” festgeschrieben werden.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define UnmodulatedCarrier 0b00
+#define OOK 0b01
+#define FSK 0b10
+#define GFSK 0b11
+</span>
+<span class="kt">void</span> <span class="nf">setModulationType</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">typ</span><span class="p">){</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">typ</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Invalid Mod Type"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">//update the first 2 fields / bits (modtyp)</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x71</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x71</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11111100</span><span class="p">)</span> <span class="o">|</span> <span class="n">typ</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="modulationdata-source">Modulationdata Source</h1>
+
+<p>Der SI4432 unterstützt verschiedene Methoden um Sende-Daten an den Chip zu
+übertragen.</p>
+<ul>
+  <li>Direct Mode mit TX_Data via GPIO-Pin (0b00)</li>
+  <li>Direct Mode mit TX_Data via SDI-Pin (nur wenn nSEL HIGH ist) (0b01)</li>
+  <li>FIFO Mode (0b10)</li>
+  <li>PN9 (internally generated) (0b11)</li>
+</ul>
+
+<p>Achtung: Für den Direct-Mode mit GPIO muss der Pin auch noch konfiguriert werden.
+Weiters muss auch definiert werden, welche Clock verwendet wird. (Siehe Direct Mode)</p>
+
+<p>Der Wert für die Modulationsdatenquelle muss ins Register 71h geschrieben werden. (dtmod)</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define SOURCE_DIRECT_GPIO 0b00
+#define SOURCE_DIRECt_SPI 0b01
+#define SOURCE_FIFO 0b10
+#define SOURCE_PN9 0b11
+</span>
+<span class="kt">void</span> <span class="nf">setModulationDataSource</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">source</span><span class="p">){</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">source</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Invalid Data Source"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">//update the value</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x71</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x71</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11001111</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">source</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">));</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="direct-mode">Direct Mode</h1>
+
+<p>Wenn der Direct-Mode verwendet wird, muss noch definiert werden, über welchen Pin die Clock übertragen wird. Dies wird in dem Register “Modulation Mode Control 2”
+(71h) festgelegt und es gibt folgende Möglichkeiten:</p>
+
+<ul>
+  <li>No TX Data CLK (0b00)</li>
+  <li>TX Data CLK is available via the GPIO pin (0b01)</li>
+  <li>TX Data CLK is available via the SDO pin (0b10)</li>
+  <li>TX Data CLK is available via the nIRQ pin (0b11)</li>
+</ul>
+
+<p>Da wir eine FSK verwenden wollen, brauchen wir keinen extra Clock Pin.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define NO_TX_DATA_CLK 0b00
+#define TX_CLK_GPIO 0b01
+#define TX_CLK_SDO 0b10
+#define TX_CLK_nIRQ 0b11
+</span>
+<span class="kt">void</span> <span class="nf">setDirectClockSource</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">source</span><span class="p">){</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">source</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Invalid Clock Source"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x71</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x71</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00111111</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">source</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span><span class="p">));</span>  
+<span class="p">}</span>
+</code></pre></div></div>
+<p>163.175
+<br /></p>
+
+<h1 id="senden-direct-mode">Senden (direct mode)</h1>
+
+<p>Achtung: Hierbei wird der SPI des ESP32 im DMA-Modus verwendet.</p>
+
+<p>Nun haben wir alle Funktionen um Signale zu senden. Jedoch benötigen wir noch Programme, mit denen wir uns POCSAG-Nachrichten erstellen können.</p>
+
+<p>Hierfür verwende ich ein kleines Python-Programm:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">pocsag</span> <span class="kn">import</span> <span class="n">encodeTXBatch</span>
+<span class="n">msgs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1"># Format = [ IsNumeric, Address(also supports A,B,C,D suffix like "133703C"), Message ]
+</span><span class="n">msgs</span><span class="p">.</span><span class="n">append</span><span class="p">([</span><span class="bp">False</span><span class="p">,</span> <span class="s">"1337"</span><span class="p">,</span> <span class="s">'Test POCSAG 123'</span><span class="p">])</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">encodeTXBatch</span><span class="p">(</span><span class="n">msgs</span><span class="p">)</span> <span class="c1">#, repeatNum = 2, inverted = False
+</span>
+
+<span class="k">print</span> <span class="p">(</span><span class="nb">format</span><span class="p">(</span><span class="mi">85</span><span class="p">,</span><span class="s">'08b'</span><span class="p">))</span>
+
+<span class="n">binData</span> <span class="o">=</span> <span class="p">[</span><span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">'08b'</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+
+<span class="n">bit32Data</span> <span class="o">=</span> <span class="p">[</span> <span class="s">''</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">binData</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">4</span><span class="p">],</span> <span class="n">binData</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">4</span><span class="p">],</span> <span class="n">binData</span><span class="p">[</span><span class="mi">2</span><span class="p">::</span><span class="mi">4</span><span class="p">],</span> <span class="n">binData</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">4</span><span class="p">])]</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bit32Data</span><span class="p">:</span>
+    <span class="k">print</span> <span class="p">(</span><span class="s">"tx_temp = add32Bit(tx_temp, 0b"</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="s">");"</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="p">(</span><span class="s">"Lines: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bit32Data</span><span class="p">))</span> <span class="o">+</span> <span class="s">"   Transfered Bits: "</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bit32Data</span><span class="p">)</span> <span class="o">*</span> <span class="mi">32</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Wichtig ist sich die Transfered Bits zu merken, da dies die Menge an Bits ist, die der SPI übertragen muss, da sonst nicht alle Daten übertragen wurden.</p>
+
+<p>Das Modul, das in diesem Script verwendet wird, wurde von cuddlycheetah erstellt. 
+Link zu der Github-Repo: <a href="https://github.com/cuddlycheetah/python-pocsag">Github</a></p>
+
+<p>Das Script erstellt eine Ausgabe, welche direkt in das ESP32-Projekt kopiert
+werden kann. Jedoch benötigt sie die add32Bit() Funktion. Diese ist
+folgendermaßen aufgebaut:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">uint8_t</span> <span class="o">*</span> <span class="nf">add32Bit</span><span class="p">(</span><span class="kt">uint8_t</span><span class="o">*</span> <span class="n">tx</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">data</span><span class="p">){</span>
+    <span class="n">tx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">;</span>
+    <span class="n">tx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">;</span>
+    <span class="n">tx</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">;</span>
+    <span class="n">tx</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">tx</span> <span class="o">+</span> <span class="mi">4</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Somit haben wir nun die Payload das wir übertragen wollen und müssen nur noch 
+vorher den Chip vorbereiten. (Frequenz setzen, Deviation usw.)</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Frequency"</span><span class="p">);</span>
+    <span class="n">setFrequency</span><span class="p">(</span><span class="mi">433</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Deviation"</span><span class="p">);</span>
+    <span class="n">setDeviation</span><span class="p">(</span><span class="mi">4</span><span class="p">.</span><span class="mi">5</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modulation"</span><span class="p">);</span>
+    <span class="n">setModulationType</span><span class="p">(</span><span class="n">FSK</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modulation Source"</span><span class="p">);</span>
+    <span class="n">setModulationDataSource</span><span class="p">(</span><span class="n">SOURCE_DIRECt_SPI</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modulation CLK Source"</span><span class="p">);</span>
+    <span class="n">setDirectClockSource</span><span class="p">(</span><span class="n">NO_TX_DATA_CLK</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Enable TX MODE"</span><span class="p">);</span>
+    <span class="n">setTXMode</span><span class="p">();</span>
+</code></pre></div></div>
+<p>Info: Die Funktionen wurden in den vorherigen Kapiteln aufgeführt. Weiters gibt es zum Schluss Links zu den Source-files.</p>
+
+<p>Die Datenrate muss nicht gesetzt werden, da diese durch die Geschwindigkeit,
+des SPIs vorgegeben wird.
+Kurz gesagt: Wenn das SPI die Daten mit 512bps überträgt, dann werden 
+sie auch mit 512kps gesendet.</p>
+
+<p>Diesen Modus nennt man auch Direct-Asynchronous-Mode. Diesem steht der 
+Direct-Synchronous-Mode gegenüber, wo die Datenrate über eine eigene
+Clock-Leitung vorgegeben wird.</p>
+
+<p>Hier nochmal der komplette Sende-Vorgang in einer Funktion:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">sendData</span><span class="p">(){</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Frequency"</span><span class="p">);</span>
+    <span class="n">setFrequency</span><span class="p">(</span><span class="mi">433</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Deviation"</span><span class="p">);</span>
+    <span class="n">setDeviation</span><span class="p">(</span><span class="mi">4</span><span class="p">.</span><span class="mi">5</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Datarate"</span><span class="p">);</span>
+    <span class="n">setDataRate</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modulation"</span><span class="p">);</span>
+    <span class="n">setModulationType</span><span class="p">(</span><span class="n">FSK</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modulation Source"</span><span class="p">);</span>
+    <span class="n">setModulationDataSource</span><span class="p">(</span><span class="n">SOURCE_DIRECt_SPI</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modulation CLK Source"</span><span class="p">);</span>
+    <span class="n">setDirectClockSource</span><span class="p">(</span><span class="n">NO_TX_DATA_CLK</span><span class="p">);</span>
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Enable TX MODE"</span><span class="p">);</span>
+    <span class="n">setTXMode</span><span class="p">();</span>
+
+    <span class="kt">uint8_t</span> <span class="o">*</span> <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">tx_buf</span><span class="p">;</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01010101010101010101010101010101</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000011001011011110101000100111</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b11111111111010110000001100001100</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01101010010110000110011111101011</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b00110100011111011111011010011000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01000001100011110001111010011000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b00100111110000111011101110000010</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01101011100110110010011000101001</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01100111111111111111110011010000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000011001011011110101000100111</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b11111111111010110000001100001100</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01101010010110000110011111101011</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b00110100011111011111011010011000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01000001100011110001111010011000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b00100111110000111011101110000010</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01101011100110110010011000101001</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01100111111111111111110011010000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+    <span class="n">tx_temp</span> <span class="o">=</span> <span class="n">add32Bit</span><span class="p">(</span><span class="n">tx_temp</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000101011101100011111001101000</span><span class="p">);</span>
+  
+
+    <span class="c1">//DMA SPI (could change in the final release, but is not that hard to implement)</span>
+    <span class="n">spi</span><span class="p">.</span><span class="n">beginTransaction</span><span class="p">(</span><span class="n">HSPI</span><span class="p">,</span> <span class="n">SPI_MODE0</span><span class="p">,</span> <span class="mi">512</span><span class="p">);</span>
+    <span class="n">spi</span><span class="p">.</span><span class="n">transfer</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="n">tx_buf</span><span class="p">,</span> <span class="n">rx_buf</span><span class="p">);</span> 
+    <span class="n">spi</span><span class="p">.</span><span class="n">endTransaction</span><span class="p">();</span>
+
+    <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Reset"</span><span class="p">);</span>
+    <span class="n">reset</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Info: Die Transfergröße des SPI ist auf 3000 gestellt, was größer ist als die benötigten 1644. Dies ist nicht so ein großes Problem, nur kleiner sollte sie nicht sein.</p>
+
+<p><br /></p>
+
+<h1 id="frequenz-offset">Frequenz Offset</h1>
+
+<p>Ein Problem beim Senden von Daten ist, dass die Sende-Frequenz nicht genau mit
+der erwarteten Frequenz übereinstimmt. Dies ist wahrscheinlich auf die 
+Ungenaugikeit des Chips zurückzuführen, da ich bei verschiedenen Chips 
+verschiedene Frequenzen bei den gleichen Einstellungen erhalte.
+Um nun dies für Testzwecke kompensieren zu können kann ein statischer Offset 
+verwendet werden. Später sollte dies durch die AFC (Automatic Frequency Control)
+passieren. Jedoch muss dafür RX funktionieren, da sich der Chip darüber
+synchronisiert.</p>
+
+<p>Laut Datenblatt kann der Offset wie folgt berechnet werden:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fo = offset / (0.15625 * (hbsel + 1))
+</code></pre></div></div>
+<p>hbsel = high band select (siehe Register 75h)</p>
+
+<p>Achtung: Meiner Erfahrung nach stimmt diese Formel nicht ganz, da sie nicht 
+die erwarteten Ergebnisse liefert. (offset = 1 führt nicht zu 1kHz offset im 
+Signal)</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//offset in khz</span>
+<span class="kt">void</span> <span class="nf">setOffset</span><span class="p">(</span><span class="kt">double</span> <span class="n">offset</span><span class="p">){</span>
+
+  <span class="kt">uint8_t</span> <span class="n">fbsr</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x75</span><span class="p">);</span>
+  <span class="kt">uint8_t</span> <span class="n">hbsel</span> <span class="o">=</span> <span class="p">(</span><span class="n">fbsr</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b1</span><span class="p">;</span>
+
+  <span class="kt">uint16_t</span> <span class="n">fo</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">/</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">15625</span> <span class="o">*</span> <span class="p">(</span><span class="n">hbsel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x73</span><span class="p">,</span> <span class="n">fo</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x72</span><span class="p">,</span> <span class="p">(</span><span class="n">fo</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="paket-handler-ausschalten">Paket-Handler ausschalten</h1>
+
+<p>Der Paket-Handler kann im Register 30h “Data Access Controll” aktiviert und 
+deaktiviert werden. In meinen Fall (POCSAG) muss ich den Paket-Handler 
+ausschalten, da die POCSAG-Pakete viel zu groß für den FIFO sind 
+(besonders wenn mehrere Frames ankommen) und die Synchronisation mit FSC 
+(frame sync code) auch nicht funktioniert. (SI4432: pro Paket 1 FSC / POCSAG
+FSC nach jedem Frame (kein neus Packet))</p>
+
+<p>Laut Datenblatt wird das Register mit 10001101 initialisiert.
+Wobei das Bit 7 (enpacrx) angibt, ob der Paket-Handler für RX aktiviert werden
+soll oder nicht. 
+Das Bit 3 (enpactx) ist für TX.</p>
+
+<p>Laut Datenblatt müsste der Pakethandler nicht deaktiviert werden, jedoch wird
+er nicht benötigt, weshalb nichts gegen das Deaktivieren spricht.</p>
+
+<p>Info: Dieses Register kann gänzlich mit 0 überschrieben werden, da die anderen
+Bits nur für die weitere Konfiguration des Paket-Handler da sind.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">disablePacketHandler</span><span class="p">(){</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x30</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="preamble">Preamble</h1>
+
+<p>Für das Einstellen der Preamble sind folgende Parameter von Bedeutung:</p>
+<ul>
+  <li>Preamble-Länge (Register 34h)</li>
+  <li>Preamble Detection Threshold</li>
+</ul>
+
+<p>Die Länge wird im Register 34h und 33h festgelegt.
+Für die Berechnung kann folgende Formel verwendet werden:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>prealen = preambleLänge / 4
+</code></pre></div></div>
+
+<p>Wenn die Länge der Preamble &gt;= 256 ist, dann muss das Bit im Register
+33h gesetzt werden (ist das MSB der Preamble-Länge) (Länge der Preamble
+wird in 9 Bits abgespeichert)</p>
+
+<p>Es nächstes wird der Preamble Detection Threashold festgelegt.
+Dieser besagt wie viele Bits von der Preamble gelesen werden müssen, bevor sie
+als gültig erkannt wird. Ein guter Wert dafür ist laut Datenblatt 20 Bits.</p>
+
+<p>Für die Berechnung kann folgende Formel verwendet werden:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>preath = threshold / 4
+</code></pre></div></div>
+
+<pre><code class="language-C">//length in bytes + threashld in bytes
+void setPreamble(uint16_t length, uint16_t threashold){
+
+  // byte = 8 bit
+  // x = byte * 8 / 4 = byte * 2
+
+  //bounds check
+  if(length &gt; 512 || threashold &gt; 128){
+    Serial.println("length or threashold out of bounds");
+    return;
+  }
+
+  uint16_t lenNibbles = length * 2;
+  uint8_t threasholdNibbles = threashold * 2;
+
+  //writing the preamble length
+  write(0x34, lenNibbles &amp; 0xFF);
+  write(0x33, (read(0x32) &amp; 0b11111110) | ((lenNibbles &gt;&gt; 8) &amp; 1));
+
+  //writing the detection threashold
+  write(0x35, (threasholdNibbles &amp; 0b11111) &lt;&lt; 3);
+}
+</code></pre>
+
+<p>Es kann nützlich sein das Invalid-Preamble-Register auszulesen, um zu erkennen,
+ob der Chip die Preamble erkannt hat. 
+Der Invalid-Peramble-Wert befindet sich im Register 04h “Interrupt/Status 2”
+Bit 6 und 5 wobei gilt:</p>
+<ul>
+  <li>Bit 6 = 1 -&gt; Valid Preamble</li>
+  <li>Bit 5 = 1 -&gt; Invalid Preamble</li>
+</ul>
+
+<p>Eine weitere Möglichkeit wäre einen GPIO Pin zu konfigurieren, der den Status
+über HIGH und LOW Signale ausgibt.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">printPreambleStatus</span><span class="p">(){</span>
+  <span class="kt">uint8_t</span> <span class="n">status</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x04</span><span class="p">);</span>
+
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"Valid: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"Invalid: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="sync-wort">SYNC-Wort</h1>
+
+<p>Das Sync-Wort kommt nach der Preamble und ist bei POCSAG 32 Bit lang.
+Der SI4432 unterstützt 5 verschiedene Längen von SYNC-Wörtern:</p>
+<ul>
+  <li>0 Byte (0b000)</li>
+  <li>1 Byte (0b001)</li>
+  <li>2 Byte (0b010)</li>
+  <li>3 Byte (0b011)</li>
+  <li>4 Byte (0b100)</li>
+</ul>
+
+<p>Das SYNC-Wort selbst wird in bis zu 4 Registern gespeichert.</p>
+
+<ul>
+  <li>1 Byte = SYNC Word 3 (Register 36h)</li>
+  <li>2 Byte = SYNC Word 3, 2 (Register 36h, 37h)</li>
+  <li>3 Byte = SYNC Word 3, 2, 1 (Register 36h, 37h, 38h)</li>
+  <li>4 Byte = SYNC Word 3, 2, 1, 0 (Register 36h, 37, 38h, 39h)</li>
+</ul>
+
+<p>Das SYNC-Wort wird in absteigender Reihenfolge ausgesendet.</p>
+
+<p>Bsp: SYNC-Wort-Zusammenstellung bei 4 Byte</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">uint32_t</span> <span class="n">sync_word</span> <span class="o">=</span> <span class="p">(((</span><span class="n">word3</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">word2</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">word1</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">word0</span> 
+</code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define NO_SYNC_WORD 0
+#define SYNC_WORD_1Byte 1
+#define SYNC_WORD_2Byte 2
+#define SYNC_WORD_3Byte 3
+#define SYNC_WORD_4Byte 4
+</span>
+<span class="c1">//length in byte</span>
+<span class="kt">void</span> <span class="nf">setSYNC_Word</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">length</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">sync_word</span><span class="p">){</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">){</span>
+      <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Sync Word is too big"</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+
+    <span class="c1">//set the SYNC word length in the header control register</span>
+    <span class="n">write</span><span class="p">(</span><span class="mh">0x33</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x33</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11111001</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">length</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">));</span>
+
+    <span class="c1">//fill the register</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">){</span>
+      <span class="c1">//word 0</span>
+      <span class="n">write</span><span class="p">(</span><span class="mh">0x36</span><span class="p">,</span> <span class="p">(</span><span class="n">sync_word</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">){</span>
+      <span class="c1">//word 1</span>
+      <span class="n">write</span><span class="p">(</span><span class="mh">0x37</span><span class="p">,</span> <span class="p">(</span><span class="n">sync_word</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">){</span>
+      <span class="c1">//word 2</span>
+      <span class="n">write</span><span class="p">(</span><span class="mh">0x38</span><span class="p">,</span> <span class="p">(</span><span class="n">sync_word</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">length</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">){</span>
+      <span class="c1">//word 3</span>
+      <span class="n">write</span><span class="p">(</span><span class="mh">0x39</span><span class="p">,</span> <span class="n">sync_word</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="rx-modem">RX-Modem</h1>
+
+<p>Das RX-Modem ist für die Demodulation und die Channel-Selektion zuständig.
+Weiters limitiert es die Bandbreite in der Signale empfangen werden.</p>
+
+<p>Für die Berechnung der Parameter können einige Formeln und eine Tabelle 
+verwendet werden. Weiters wird die Datenrate und die Deviation / Shift für die
+Berechnung benötigt.</p>
+
+<p>Als erstes muss der Modulation-Index (h) berechnet werden:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>modindex = 2 * deviation / (datarate * (1 + manchester)))
+</code></pre></div></div>
+<p>Info: machester ist 0 wenn Manchester-Encoding deaktiviert ist, ansonsten 1</p>
+
+<p>Als nächstes wird die Bandbreite des Bandfilters berechnet. Für diese Berechnung
+gibt es zwei Formeln, die verwendet werden können je nachdem, ob der Modulations-Index
+größer oder kleiner 0 ist.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if modindex &gt; 1
+    bandwidth = (datarate / 2 * (1 + manchester) + 2 * deviation)
+else
+    bandwidth = (datarate * (1 + manchester) + deviation)
+
+</code></pre></div></div>
+
+<p>Mit diesem Wert kann dann in einer Tabelle nachgesehen werden, was die 
+entsprechenden Werte für die Register ndec_exp, dwn3_bypass, fileset sind.</p>
+
+<p>Diese Werte können meines Wissens nach nicht berechnet, sondern nur aus der 
+Tabelle ausgelesen werden.</p>
+
+<p>Achtung: Es gibt 2 Tabellen einmal für FSK, GFSK und eine für OOK.</p>
+
+<p>Nachdem die Werte aus der Tabelle ausgelesen wurden, können nun die Werte 
+für das rxosr-, ncoff- und crgain-Register berechnet werden.</p>
+
+<p>rxosr kann wie folgt berechnet werden:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rxosr = (500 * (1 + 2 * dwm3_bypass)) / (2^(ndec_exp - 3) * datarate * (1 + manchester))
+</code></pre></div></div>
+
+<p>ncoff:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ncoff = (datarate * (1 + manchester) * 2^(20 + ndec_exp)) / (500 * (1 + 2 * dwm3_bypass))
+</code></pre></div></div>
+
+<p>Die Formel, die für das crgain-Register im Datenblatt angegebn ist, macht keinen 
+Sinn. Daher wird eine andere Formel verwendet, die auch andere Projekte
+verwenden:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>crgain = 2 + (65535 * int(datarate)) / int(rxosr * deviation)
+</code></pre></div></div>
+
+<p>Die ganzen Werte müssen in einen ganzzahligen Wert umgewandelt werden, da sie
+sonst nicht in den Registern gespeichert werden können.</p>
+
+<p>Info: Im Datenblatt gibt es auch vorgefertigte Werte für die Register, 
+welche man nutzen kann, falls der benötigte Werte dort dabei ist. 
+Diese Werte sind in einer extra Tabelle organisiert.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//datarate in kbps / deviation in khz / manchester = 1 (true) or 0 (false)</span>
+<span class="kt">void</span> <span class="nf">setupModem</span><span class="p">(</span><span class="kt">double</span> <span class="n">datarate</span><span class="p">,</span> <span class="kt">double</span> <span class="n">deviation</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">manchester</span><span class="p">){</span>
+
+  <span class="c1">//TODO bounds checks</span>
+
+  <span class="c1">//calculate the mod index (h)</span>
+  <span class="kt">double</span> <span class="n">modindex</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">deviation</span> <span class="o">/</span> <span class="p">(</span><span class="n">datarate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">manchester</span><span class="p">)));</span>
+
+  <span class="kt">double</span> <span class="n">bandwidth</span><span class="p">;</span>
+
+  <span class="c1">//calculate the bandwidth</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">modindex</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">){</span>
+      <span class="n">bandwidth</span> <span class="o">=</span> <span class="p">(</span><span class="n">datarate</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">manchester</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">deviation</span><span class="p">);</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="n">bandwidth</span> <span class="o">=</span> <span class="p">(</span><span class="n">datarate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">manchester</span><span class="p">)</span> <span class="o">+</span> <span class="n">deviation</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kt">uint8_t</span> <span class="n">ndec_exp</span><span class="p">;</span>
+  <span class="kt">uint8_t</span> <span class="n">dwm3_bypass</span><span class="p">;</span>
+  <span class="kt">uint8_t</span> <span class="n">fileset</span><span class="p">;</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">142</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">dwm3_bypass</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+      <span class="n">dwm3_bypass</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">//this is the digitized version of a table located in the datasheet</span>
+  <span class="c1">//it is not nice but i count find any consistency in the table that could </span>
+  <span class="c1">//have been used to calculate those values</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">.</span><span class="mi">6</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">1</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">7</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">.</span><span class="mi">5</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">.</span><span class="mi">9</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">.</span><span class="mi">4</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">.</span><span class="mi">9</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">6</span><span class="p">.</span><span class="mi">1</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">8</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">.</span><span class="mi">5</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">.</span><span class="mi">6</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">11</span><span class="p">.</span><span class="mi">5</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="p">.</span><span class="mi">1</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">14</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">16</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">17</span><span class="p">.</span><span class="mi">5</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">18</span><span class="p">.</span><span class="mi">9</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">21</span><span class="p">.</span><span class="mi">0</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">22</span><span class="p">.</span><span class="mi">7</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">24</span><span class="p">.</span><span class="mi">0</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">28</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">34</span><span class="p">.</span><span class="mi">7</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">37</span><span class="p">.</span><span class="mi">7</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">41</span><span class="p">.</span><span class="mi">7</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">45</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">47</span><span class="p">.</span><span class="mi">9</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">56</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">64</span><span class="p">.</span><span class="mi">1</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">69</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">75</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">83</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">90</span><span class="p">.</span><span class="mi">0</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">95</span><span class="p">.</span><span class="mi">3</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">112</span><span class="p">.</span><span class="mi">1</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">127</span><span class="p">.</span><span class="mi">9</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">137</span><span class="p">.</span><span class="mi">9</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">142</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">167</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">181</span><span class="p">.</span><span class="mi">1</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">191</span><span class="p">.</span><span class="mi">5</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">15</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">225</span><span class="p">.</span><span class="mi">1</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">248</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">269</span><span class="p">.</span><span class="mi">3</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">284</span><span class="p">.</span><span class="mi">9</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">335</span><span class="p">.</span><span class="mi">5</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">361</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">9</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">420</span><span class="p">.</span><span class="mi">2</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">468</span><span class="p">.</span><span class="mi">4</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">518</span><span class="p">.</span><span class="mi">8</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">577</span><span class="p">.</span><span class="mi">0</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">bandwidth</span> <span class="o">&lt;=</span> <span class="mi">620</span><span class="p">.</span><span class="mi">7</span><span class="p">){</span>
+      <span class="n">ndec_exp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">fileset</span> <span class="o">=</span> <span class="mi">14</span><span class="p">;</span>
+  <span class="p">}</span>
+
+
+
+  <span class="kt">double</span> <span class="n">rxosr_f</span> <span class="o">=</span> <span class="p">(</span><span class="mi">500</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dwm3_bypass</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">ndec_exp</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">datarate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">manchester</span><span class="p">));</span>
+  <span class="kt">uint32_t</span> <span class="n">rxosr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span> <span class="n">rxosr_f</span><span class="p">;</span>
+
+  <span class="kt">uint32_t</span> <span class="n">ncoff</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span> <span class="p">((</span><span class="n">datarate</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">manchester</span><span class="p">)</span> <span class="o">*</span> <span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">20</span> <span class="o">+</span> <span class="n">ndec_exp</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">500</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">dwm3_bypass</span><span class="p">)));</span>
+
+  <span class="c1">//the formula that was mentioned in the datasheet does not really work for the crgain</span>
+  <span class="kt">uint32_t</span> <span class="n">crgain</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="p">((</span><span class="mi">65535</span> <span class="o">*</span> <span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span> <span class="n">datarate</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span> <span class="p">(</span><span class="n">rxosr_f</span> <span class="o">*</span> <span class="n">deviation</span><span class="p">)));</span>
+
+
+  <span class="c1">//write the values to the registers </span>
+
+  <span class="c1">//set the dwn3_bypass, ndec_exp and fileset in the register 1Ch</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x1C</span><span class="p">,</span> <span class="p">(((</span><span class="n">dwm3_bypass</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">ndec_exp</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b111</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="n">fileset</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b1111</span><span class="p">));</span>
+
+  <span class="c1">//set the rxosr in the register 20h and 21h</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x20</span><span class="p">,</span> <span class="n">rxosr</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x21</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x21</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b00011111</span><span class="p">)</span> <span class="o">|</span> <span class="p">(((</span><span class="n">rxosr</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b111</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span><span class="p">));</span>
+
+  <span class="c1">//set the ncoff in the register 21h 22h 23h </span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x23</span><span class="p">,</span> <span class="n">ncoff</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x22</span><span class="p">,</span> <span class="p">(</span><span class="n">ncoff</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x21</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x21</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11110000</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">ncoff</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b1111</span><span class="p">));</span>
+
+  <span class="c1">//set the crgain in the register 24h 25h</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x25</span><span class="p">,</span> <span class="n">crgain</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x24</span><span class="p">,</span> <span class="p">(</span><span class="n">crgain</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b111</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Info: Das viel zu lange If-Else-Statement ist die Digitalisierung der 
+Tabelle. Ich habe leider keine Funktion gefunden, mit der ich die Werte aus 
+der Tabelle errechnen hätte können. Sollte jemand solch eine Funktion finden 
+würde ich mich darüber freuen.</p>
+
+<p>Es kann auch relativ praktisch sein, überprüfen zu können, ob die Werte in den Tabellen
+stimmen. Für dies kann folgende Funktion verwendet werden:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">printModem</span><span class="p">(){</span>
+
+  <span class="kt">uint8_t</span> <span class="n">reg1C</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x1C</span><span class="p">);</span>
+
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"DW3: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">reg1C</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">,</span> <span class="n">HEX</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"ndec_exp: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">((</span><span class="n">reg1C</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b111</span><span class="p">,</span> <span class="n">HEX</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"fileset: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">reg1C</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b1111</span><span class="p">,</span> <span class="n">HEX</span><span class="p">);</span>
+
+  <span class="kt">uint32_t</span> <span class="n">rxosr</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x20</span><span class="p">);</span>
+  <span class="n">rxosr</span> <span class="o">|=</span> <span class="p">((</span><span class="n">read</span><span class="p">(</span><span class="mh">0x21</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b111</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">;</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"rxosr: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">rxosr</span><span class="p">,</span> <span class="n">HEX</span><span class="p">);</span>
+
+  <span class="kt">uint32_t</span> <span class="n">ncoff</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x23</span><span class="p">);</span>
+  <span class="n">ncoff</span> <span class="o">|=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x22</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">;</span>
+  <span class="n">ncoff</span> <span class="o">|=</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x21</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b1111</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">;</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"ncoff: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">ncoff</span><span class="p">,</span> <span class="n">HEX</span><span class="p">);</span>
+
+  <span class="kt">uint32_t</span> <span class="n">crgain</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x25</span><span class="p">);</span>
+  <span class="n">crgain</span> <span class="o">|=</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b111</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">;</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"crgain: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">crgain</span><span class="p">,</span> <span class="n">HEX</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Info: Mir persönlich ist vorgekommen, dass die Bandbreite des Bandpasses 
+ein bisschen zu streng ist. Dieses Problem wird aber später behandelt.</p>
+
+<p><br /></p>
+
+<h1 id="empfangen-direct-mode">Empfangen (direct mode)</h1>
+
+<p>Daten mit dem SI4432 zu empfangen kann ein bisschen trickreich sein, da es relativ
+schwer ist den Chip zu debuggen. Daher würde ich empfehlen folgende Dinge bei der
+Hand zu haben:Sachen</p>
+
+<p>Anstelle des Funkgerätes kann auch ein SDR mit Sendefähigkeit verwendet werden.
+Es ist natürlich auch möglich die folgenden Schritte ohne dieses Equipment
+durchzuführen, jedoch ist es dann schwerer, Fehler schnell zu erkennen bzw.
+den Chip sinnvoll einzustellen.</p>
+
+<p>Zur Info:
+RX Chip —-senden—-&gt; TX Chip</p>
+
+<p>Normalerweise könnten wir das Offset-Register verändern, um den Sender auf 
+die richtige Frequenz zu tunen. Jedoch geht dies in diesem Fall nicht, da der
+AFC (Automatic Frequency Controll) das Register verändert und somit unseren
+Offset zunichtemacht.</p>
+
+<p>Meiner Erfahrung nach geht es am leichtesten den Offset auf 0 zu belassen und 
+mit dem RX-Chip einmal Daten auszusenden (siehe Senden (direct mode)).
+Mit dem SDR-RTL kann dann nachgesehen werden, auf welcher Frequenz der Chip die 
+Daten genau aussendet, denn meistens senden die Chips nicht auf der 
+eingestellten Frequenz. (liegt vielleicht an der Ungenauigkeit des Quarzes).</p>
+
+<p>Wenn nun die eigentliche Frequenz ermittelt wurde, kann beim TX-Chip der
+Offset so eingestellt werden, dass dieser genau auf dieser Frequenz sendet. 
+Beim TX-Chip können wir das Offset-Register verändern, sodass der AFC das Register
+nur im RX-Modus verändert.</p>
+
+<p>Offset einstellen:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//offset in khz</span>
+<span class="kt">void</span> <span class="nf">setOffset</span><span class="p">(</span><span class="kt">double</span> <span class="n">offset</span><span class="p">){</span>
+
+  <span class="kt">uint8_t</span> <span class="n">fbsr</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x75</span><span class="p">);</span>
+  <span class="kt">uint8_t</span> <span class="n">hbsel</span> <span class="o">=</span> <span class="p">(</span><span class="n">fbsr</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b1</span><span class="p">;</span>
+
+  <span class="kt">uint16_t</span> <span class="n">fo</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">/</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">15625</span> <span class="o">*</span> <span class="p">(</span><span class="n">hbsel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x73</span><span class="p">,</span> <span class="n">fo</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">);</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x72</span><span class="p">,</span> <span class="p">(</span><span class="n">fo</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Info: Offsets sind nicht wirklich in khz (Formel passt wahrscheinlich nicht ganz, also einfach eher nach Gefühl einstellen)</p>
+
+<p>Mit dem RTL-SDR können wir dann wieder abgleichen, ob der TX-Chip nun auf der 
+richtigen Frequenz sendet.</p>
+
+<p>Bsp-Code für den TX-Chip: Code:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>void loop() {
+  
+  if(Serial.available()){
+
+    //--------do spi stuff here-------
+
+    setOffset(22);
+    sendData();
+    reset();
+
+    //---------------------------------
+
+    delay(1500);
+    while(Serial.available()){
+      Serial.read();
+    }
+  }
+
+  delay(100);
+}
+</code></pre></div></div>
+<p>Der Offset ist bei jedem Chip anders. (Gleiche Register-Werte bei 2 Chips = 2 
+verschiedene Frequenzen)</p>
+
+<p>Da nun die TX-Seite eingestellt ist und die Frequenzen angeglichen wurden,
+kommen wir wieder zum RX-Chip und kümmern uns um den Empfang.</p>
+
+<p>Für den Empfang müssen folgende Parameter eingestellt werden:</p>
+<ul>
+  <li>Frequenz</li>
+  <li>Deviation</li>
+  <li>Datenrate</li>
+  <li>Modulationstyp</li>
+  <li>Paket-Handler (disable)</li>
+  <li>Preamble</li>
+  <li>SYNC-Wort</li>
+  <li>RX-Modem</li>
+  <li>RX-Mode</li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">receive</span><span class="p">(){</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Frequency"</span><span class="p">);</span>
+  <span class="n">setFrequency</span><span class="p">(</span><span class="mi">433</span><span class="p">);</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Deviation"</span><span class="p">);</span>
+  <span class="n">setDeviation</span><span class="p">(</span><span class="mi">4</span><span class="p">.</span><span class="mi">5</span><span class="p">);</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Datarate"</span><span class="p">);</span>
+  <span class="n">setDataRate</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">2</span><span class="p">);</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modulation"</span><span class="p">);</span>
+  <span class="n">setModulationType</span><span class="p">(</span><span class="n">FSK</span><span class="p">);</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Disable Packet Handler"</span><span class="p">);</span>
+  <span class="n">disablePacketHandler</span><span class="p">();</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Peramble"</span><span class="p">);</span>
+  <span class="n">setPreamble</span><span class="p">(</span><span class="mi">72</span><span class="p">,</span><span class="mi">20</span><span class="p">);</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting SYNC Words"</span><span class="p">);</span>
+  <span class="n">setSYNC_Word</span><span class="p">(</span><span class="n">SYNC_WORD_4Byte</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10000011001011011110101000100111</span><span class="p">);</span>  
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Setting Modem"</span><span class="p">);</span>
+  <span class="n">setupModem</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+  <span class="n">setRXMode</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Nun wurden alle benötigten Register eingestellt.</p>
+
+<p>Info: Wenn ein Chip RX und TX können soll, dann reicht theoretisch auch eine
+Funktion aus, welche die Parameter für RX und TX einstellt. (Einfach bei RX die 
+fehlenden Sachen von TX hinzufügen oder andersherum).</p>
+
+<p>Um das Offset-Problem kümmern wir uns später.</p>
+
+<p>Nun muss nur noch der Chip in den RX-Modus versetzt werden. Dies geschied, wenn 
+im Register 07h “Operating Mode and Function Control 1” das Bit 2 rxon auf 1 gesetzt wird.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">setRXMode</span><span class="p">(){</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x07</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x07</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11111011</span><span class="p">)</span> <span class="o">|</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Wenn nun die Funktion receive() aufgerufen wird, werden alle Register richtig
+eingestellt und der Chip in den RX-Modus versetzt.</p>
+
+<p>Da wir den Chip aber auch im RX-direkt-Modus verwenden wollen, müssen wir noch
+die empfangenen Daten herausführen. Dies funktioniert am besten, wenn wir die
+Daten auf einen eigenen GPIO-Pin schreiben und zusätzlich noch eine Clock auf 
+einen anderen GPIO-Pin, damit zur richtigen Zeit abgetastet wird.</p>
+
+<p>GPIOs konfigurieren geht relativ einfach. Man muss nur in das entsprechende
+Register des GPIOs einen Wert schreiben.</p>
+
+<p>GPIO Register:</p>
+<ul>
+  <li>GPIO0 -&gt; 0Bh</li>
+  <li>GPIO1 -&gt; 0Ch</li>
+  <li>GPIO2 -&gt; 0Dh</li>
+</ul>
+
+<p>Welche Funktionen die GPIOs genau haben, wird später erläutert. 
+Für das Empfangen ist nur wichtig, dass wir einen davon als RX-Data definieren 
+und den anderen als TX/RX-Data-clock. Dies kann mit folgendem Befehl
+erledigt werden.</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">enableRXOutputPins</span><span class="p">(){</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x0B</span><span class="p">,</span> <span class="mi">0</span><span class="n">b10100</span><span class="p">);</span> <span class="c1">//RX Data on GPIO 0</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x0C</span><span class="p">,</span> <span class="mi">0</span><span class="n">b01111</span><span class="p">);</span> <span class="c1">//RX Clock on GPIO 1</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Das Messen der Output-Pins funktioniert am besten mit einem Oszilloskop,
+sollte kein Oszilloskop vorhanden sein, kann man auch das Preamble-Register
+abfragen. Dies funktioniert auch relativ gut, wenn man kein Osilloskop dabei hat.
+Jedoch ist das Finden von Fehlern dadurch mit mehr Aufwand verbunden.
+In dem Register steht weiters noch ob das SYNC-Wort erkannt wurde, daher kann dies auch gleich mit ausgegeben werden.</p>
+
+<p>Das Register (04h “Interrupt / Status 2”) kann wie folgt abgefragt werden:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">printPreambleAndSyncStatus</span><span class="p">(){</span>
+  <span class="kt">uint8_t</span> <span class="n">status</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="mh">0x04</span><span class="p">);</span>
+
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"Valid Preamble: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"Invalid Preamble: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">"SYNC Word detected: "</span><span class="p">);</span>
+  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">((</span><span class="n">status</span> <span class="o">&gt;&gt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Somit haben wir nun alles zusammen für die Empfangsseite:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span> <span class="p">{</span>
+  
+  <span class="k">if</span><span class="p">(</span><span class="n">Serial</span><span class="p">.</span><span class="n">available</span><span class="p">()){</span>
+
+    <span class="c1">//--------do spi stuff here-------</span>
+    
+    <span class="n">receive</span><span class="p">();</span>
+    <span class="n">enableRXOutputPins</span><span class="p">();</span>
+    
+    <span class="c1">//---------------------------------</span>
+
+    <span class="n">delay</span><span class="p">(</span><span class="mi">1500</span><span class="p">);</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">Serial</span><span class="p">.</span><span class="n">available</span><span class="p">()){</span>
+      <span class="n">Serial</span><span class="p">.</span><span class="n">read</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="n">printPreambleAndSyncStatus</span><span class="p">();</span>
+  <span class="n">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Achtung! Es muss einmal ein Zeichen per UART gesendet werden, damit die RX-Register
+konfiguriert werden und der Chip in den RX-Modus wechselt.</p>
+
+<p>Wenn nun mit dem TX-Chip-Daten gesendet werden, sollten sie beim RX-Data-Pin 
+ausgegeben werden und zusätzlich sollte das Valid-Preamble-Bit kurz auf 1 sein
+und danach das SYNC-Word-Bit auch auf 1.
+Das Valid-Premable-Bit geht nach der Preamble wieder auf 0, wohingegen das
+SYNC-Word-Bit auf 1 bleibt.</p>
+
+<p>Somit wurde ein erfolgreicher Transfer durchgeführt.
+Hurray.</p>
+
+<p>Hier noch ein paar kleine Debug-Tipps:</p>
+<ul>
+  <li>Wenn sich der RX-Chip in Receive befindet, aber nichts empfängt, ggf. 
+mit einem Handfunkgerät in der Nähe der Frequenz senden und schauen, ob er dann 
+etwas empfängt. Geräte wie das Baofeng erzeugen relativ viele Oberwellen und 
+senden dann auch auf Frequenzen die nicht erwünscht sind. Jedoch kann dies auch dabei
+helfen, die eigentlich Frequenz des RX-Chips zu finden.</li>
+  <li>Wenn man die Frequenz gefunden hat und HIGH und LOW am RX-Ausgang sehen will,
+aber kein Oszi hat, dann kann hier ein Handfunkgerät mit abgeschraubter 
+Antenne helfen. Dieses Funkgerät sendet relativ gut, nur eben auf einer Frequenz, da
+die Oberwellen zu wenig Leistung haben, um sichtbar zu sein. Somit kann man dann
+auf der gewünschten HIGH-Frequenz senden und ein konstantes Signal am RX-Data-Ausgang
+messen.</li>
+  <li>Es empfielt sich auch Antennen an die SI4432-Chips anzubringen, 
+da sonst die Signale möglicherweise zu schwach sind.</li>
+  <li>Ein konstantes Monitoring mit einem RTL-SDR und zB. gqwrx ist auch sehr
+hilfreich.</li>
+</ul>
+
+<p><br /></p>
+
+<h1 id="quarz--frequenz-tuning">Quarz / Frequenz tuning</h1>
+
+<p>Wie wir beim Senden bemerkt haben, stimmt die Frequenz des Chips nicht wirklich 
+mit der überein, die wir eingestellt haben. Ich vermute, dass dies am Quarz liegt.
+Der Chip selbst bietet hierfür eine Lösung an und zwar kann man den Quarz ein 
+bisschen “ziehen” (Frequenz verändern), um ihn auf die richtige Frequenz zu 
+tunen.</p>
+
+<p>Die Werte für die korrekte Frequenz kann mit einem RTL-SDR herausgefunden 
+werden. Jedoch muss davor der RTL-SDR kalibriert werden, da dieser sonst 
+die falschen Signale liefert (falscher Offset).
+Um den SDR zu kalibieren, gibt es ein sehr nützliches Projekt namens 
+kalibrate-rtl. Dieses ist auf GitHub zu finden und verwendet GSM-Stationen, um 
+den Fehler des RTL-SDRs zu ermitteln. Dieser Fehler kann dann zB. gwrx 
+übergeben werden, damit der Offset angepasst wird.</p>
+
+<p>Link Github: <a href="https://github.com/steve-m/kalibrate-rtl"> kalibrate-rtl</a></p>
+
+<p>Verwendung kalibrate-rtl:</p>
+
+<p>Zuerst muss nach den Basestations gesucht werden, es gibt verschiedene Arten von
+Basestations: GSM950, GSM900, EGSM, … (-h für alle Optionen)</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./kal -s GSM900
+</code></pre></div></div>
+
+<p>Wenn dieser Befehl erfolgreich durchgelaufen ist, sollte er hoffentlich 
+ein paar Stationen auflisten, wenn nicht dann am besten ein anderes 
+Band auswählen.</p>
+
+<p>Wenn Basestations gefunden wurden, kann eine für die Kalibrierung verwendet werden</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./kal -c 15
+</code></pre></div></div>
+<p>(kalibriere mit Basestation auf Kanal 15)</p>
+
+<p>Dann sollte zum Schluss der Fehler in ppm ausgegeben werden.</p>
+
+<p>So nun haben wir einen kalibrierten RTL-SDR und können das Register 
+09h “Crystal Oscillator Load Capacitance” verwenden, um den Si4432 richtig zu 
+tunen.</p>
+
+<p>Leider habe ich keine sinnvolle Formel gefunden, mit der dieser Shift berechnet 
+werden kann.
+Somit ist braucht es ein bisschen Trial and Error bis der Wert passt.</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//load 0 - 0b01111111 (127)</span>
+<span class="kt">void</span> <span class="nf">setCrystalLoadCap</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">load</span><span class="p">){</span>
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x09</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x09</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b10000000</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">load</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b01111111</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Je höher die Load desto kleiner wird die Frequenz.</p>
+
+<p>Sollte dies nicht genug sein, um den Quarz auf die richtige Frequnz zu ziehen, 
+würde es sich auch anbieten, einfach die Frequenz ein bisschen kleiner zu machen.</p>
+
+<p>Info: Das Offset-Register zu beschreiben ist keine gute Idee, da der AFC dies 
+im RX-Mode überschreibt und somit diesen Offset zunichtemacht.</p>
+
+<p>Achtung! Es könnte sein, dass dies negative Auswirkungen auf das Verhalten des 
+Chips hat, jedoch ist mir bis jetzt noch nichts aufgefallen und im Datenblatt 
+wird auch nichts erwähnt bezüglich dieser Probleme.</p>
+
+<p>Ich bin mir zu diesem Zeitpunkt auch noch nicht sicher, wie sich die Temperatur 
+auf das Verhalten des Oszillators auswirkt. Ich kann mir gut vorstellen, dass eine
+Temperaturschwankung zu einer Frequenzschwankung führen kann. Diese könnte 
+theoretisch mit Hilfe des internen Temperatursensors ausgeglichen werden.</p>
+
+<p><br /></p>
+
+<h1 id="sende-leistung">Sende-Leistung</h1>
+
+<p>Die Sendeleistung des Chips kann im Register 6Dh “TX Power” eingestellt werden.</p>
+
+<p>Für die Leistung gibt es 4 Stufen:</p>
+<ul>
+  <li>+11 dBm (0b00)</li>
+  <li>+14 dBm (0b01)</li>
+  <li>+17 dBm (0b10)</li>
+  <li>+20 dBm (0b11)</li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define POWER_11dB 0b00
+#define POWER_14dB 0b01
+#define POWER_17dB 0b10
+#define POWER_20dB 0b11
+</span><span class="kt">void</span> <span class="nf">setPowerLevel</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">level</span><span class="p">){</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">level</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Power level too big"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">write</span><span class="p">(</span><span class="mh">0x6D</span><span class="p">,</span> <span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="mh">0x6D</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11111100</span><span class="p">)</span> <span class="o">|</span> <span class="n">level</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="gpio">GPIO</h1>
+
+<p>Der SI4432 vefügt über 3 GPIO-Pins, die konfiguriert werden können.
+Dies geschieht über verschiedene Register (Jeder GPIO hat sein eigenes Register).</p>
+
+<ul>
+  <li>GPIO0 = Register 0Bh</li>
+  <li>GPIO1 = Register 0Ch</li>
+  <li>GPIO2 = Register 0Dh</li>
+</ul>
+
+<p>In diesen Registern kann in den ersten 5 Bits die Funktionalität des Pins 
+festgelegt werden.</p>
+
+<p><br /></p>
+
+<p>Es gibt folgende Möglichkeiten:</p>
+
+<ul>
+  <li>00000: Power-On-Reset (output)</li>
+  <li>00001: Wake-Up Timer: 1 when WUT has expired (output)</li>
+  <li>00010: Low Battery Detect: 1 when battery is below threshold * setting (output)</li>
+  <li>00011: Direct Digital Input</li>
+  <li>00100: External Interrupt, falling edge (input)</li>
+  <li>00101: External Interrupt, rising edge (input)</li>
+  <li>00110: External Interrupt, state change (input)</li>
+  <li>00111: ADC Analog Input</li>
+  <li>01000: Reserved (Analog Test N Input)</li>
+  <li>01001: Reserved (Analog Test P Input)</li>
+  <li>01010: Direct Digital Output</li>
+  <li>01011: Reserved (Digital Test Output)</li>
+  <li>01100: Reserved (Analog Test N Output)</li>
+  <li>01101: Reserved (Analog Test P Output)</li>
+  <li>01110: Reference Voltage (output)</li>
+  <li>01111: TX/RX Data CLK output to be used in conjunction with TX/RX Data pin (output)</li>
+  <li>10000: TX Data input for direct modulation (input)</li>
+  <li>10001: External Retransmission Request (input)</li>
+  <li>10010: TX State (output)</li>
+  <li>10011: TX FIFO Almost Full (output)</li>
+  <li>10100: RX Data (output)</li>
+  <li>10101: RX State (output)</li>
+  <li>10110: RX FIFO Almost Full (output)</li>
+  <li>10111: Antenna 1 Switch used for antenna diversity (output)</li>
+  <li>11000: Antenna 2 Switch used for antenna diversity (output)</li>
+  <li>11001: Valid Preamble Detected (output)</li>
+  <li>11010: Invalid Preamble Detected (output)</li>
+  <li>11011: Sync Word Detected (output)</li>
+  <li>11100: Clear Channel Assessment (output)</li>
+  <li>11101: VDD</li>
+  <li>else: GND</li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define SI4432_GPIO0 0x0B
+#define SI4432_GPIO1 0x0C
+#define SI4432_GPIO2 0x0D
+</span>
+<span class="kt">void</span> <span class="nf">setGPIO</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">gpio</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">function</span><span class="p">){</span>
+
+  <span class="k">if</span><span class="p">(</span><span class="n">gpio</span> <span class="o">&gt;</span> <span class="mh">0x0D</span> <span class="o">||</span><span class="n">gpio</span> <span class="o">&lt;</span> <span class="mh">0x0B</span><span class="p">){</span>
+    <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">"Invalid GPIO pin"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">write</span><span class="p">(</span><span class="n">gpio</span><span class="p">,</span> <span class="n">function</span> <span class="o">&amp;</span> <span class="mi">0</span><span class="n">b11111</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br /></p>
+
+<h1 id="zusammenfassung">Zusammenfassung</h1>
+
+<p>Des SI4432 ist ein recht netter Transceiver, jedoch ist er
+sicherlich nicht der beste für meine Anwendung.</p>
+
+<p>Werde ich den Chip trotzdem verwenden?</p>
+
+<p>Ja, da ich noch keinen besseren Chip gefunden habe.</p>
+
+<p><br /></p>
+
+<p>Was ist mit dem SI4463?</p>
+
+<p>Diesen Chip würde ich sehr gerne verwenden, da dieser eine 
+Verbesserung des SI4432 ist. Jedoch konnte ich nicht genügend 
+Informationen (Datenblätter) finden, um sinnvoll Software 
+für den Chip entwickeln zu können.</p>
+
+<p>Falls mir jemand ein ca. 160+ seitiges Datenblatt zukommen lässt,
+in dem alles beschrieben wird, wäre ich sehr dankbar.</p>
+
+<p><br /></p>
+
+<p>Was passiert nun?</p>
+
+<p>Als nächstes wird mit diesem neuen Wissen ein Prototyp für 
+einen POCSAG-Transceiver entwickelt.
+(Hierzu wird es noch einen eigenen Blogeintrag geben)</p>
+
+<p><br /></p>
+
+<p>Hier noch der Link zu der Github Repo:
+<a href="https://github.com/Hackertreff-Reutte/Pager-Code-Chunks">Pager-Code-Chunks</a></p>
+
+<p><br /></p>
+
+<p>~ HTR / Alex (UnHold)</p>
+
+
+
+
+    <footer>
+
+  Hackertreff-Reutte/
+  <br><br>
+   GitHub:<a
+    href="https://github.com/Hackertreff-Reutte">Hackertreff-Reutte</a> 
+  <br>
+  <a href=/impressum.html>Impressum</a>
+  <br>
+  <a href=/feed.xml class="feed">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" id="feed-svg">
+      <!--! Font Awesome Pro 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+      <path
+        d="M384 32H64C28.65 32 0 60.66 0 96v320c0 35.34 28.65 64 64 64h320c35.35 0 64-28.66 64-64V96C448 60.66 419.3 32 384 32zM150.6 374.6C144.4 380.9 136.2 384 128 384s-16.38-3.121-22.63-9.371c-12.5-12.5-12.5-32.76 0-45.26C111.6 323.1 119.8 320 128 320s16.38 3.121 22.63 9.371C163.1 341.9 163.1 362.1 150.6 374.6zM249.6 383.9C249 383.1 248.5 384 247.1 384c-12.53 0-23.09-9.75-23.92-22.44C220.5 306.9 173.1 259.5 118.4 255.9c-13.22-.8438-23.25-12.28-22.39-25.5c.8594-13.25 12.41-22.81 25.52-22.38c77.86 5.062 145.3 72.5 150.4 150.4C272.8 371.7 262.8 383.1 249.6 383.9zM345 383.1C344.7 384 344.3 384 343.1 384c-12.8 0-23.42-10.09-23.97-23C315.6 254.6 225.4 164.4 119 159.1C105.8 159.4 95.47 148.3 96.02 135C96.58 121.8 107.9 111.2 121 112c130.7 5.469 241.5 116.3 246.1 246.1C368.5 372.3 358.3 383.4 345 383.1z" />
+    </svg></object>RSS Feed</a>
+
+</footer>
+
+  </body>
+</html>
