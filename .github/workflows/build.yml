@@ -1,4 +1,4 @@
-name: build
+﻿name: build
 
 on:
   push:
@@ -17,8 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
       - run: |
-          bundle install
           echo "baseurl: \"/${{ github.event.inputs.branch }}\"" >> overwrite.yml
           bundle exec jekyll build --config _config.yml,overwrite.yml
       - uses: actions/checkout@v3
